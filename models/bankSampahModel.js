@@ -1,0 +1,123 @@
+import db from "../config/db.js";
+
+class BankSampah {
+  static async getAll(page, limit, search) {
+    const offset = (page - 1) * limit;
+
+    const [rows] = await db.query(
+      `
+    SELECT 
+      bs.id_bank_sampah,
+      bs.kode_bank_sampah,
+      bs.nama_bank_sampah,
+      bs.no_telepon,
+      kl.nama_kelurahan,
+      kc.nama,
+      COUNT(n.id_nasabah) AS jumlah_nasabah
+
+    FROM bank_sampah bs
+
+    JOIN kelurahan kl 
+      ON bs.id_kelurahan = kl.id_kelurahan
+
+    JOIN kecamatan kc 
+      ON kl.id_kecamatan = kc.id_kecamatan
+
+    LEFT JOIN nasabah n
+      ON bs.id_bank_sampah = n.id_bank_sampah
+
+    WHERE 
+      bs.nama_bank_sampah LIKE ?
+      OR bs.kode_bank_sampah LIKE ?
+      OR kl.nama_kelurahan LIKE ?
+
+    GROUP BY bs.id_bank_sampah
+
+    LIMIT ? OFFSET ?
+    `,
+      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset],
+    );
+
+    const [count] = await db.query(
+      `
+    SELECT COUNT(*) as total
+    FROM bank_sampah bs
+    JOIN kelurahan kl 
+      ON bs.id_kelurahan = kl.id_kelurahan
+    WHERE 
+      bs.nama_bank_sampah LIKE ?
+      OR bs.kode_bank_sampah LIKE ?
+      OR kl.nama_kelurahan LIKE ?
+    `,
+      [`%${search}%`, `%${search}%`, `%${search}%`],
+    );
+
+    return {
+      data: rows,
+      total: count[0].total,
+    };
+  }
+
+  static async create(data) {
+    const {
+      kode_bank_sampah,
+      no_urut_bank,
+      nama_bank_sampah,
+      id_kelurahan,
+      alamat,
+      no_telepon,
+    } = data;
+
+    const [result] = await db.query(
+      `
+    INSERT INTO bank_sampah 
+    (kode_bank_sampah, no_urut_bank, nama_bank_sampah, id_kelurahan, alamat, no_telepon)
+    VALUES (?, ?, ?, ?, ?, ?)
+    `,
+      [
+        kode_bank_sampah,
+        no_urut_bank,
+        nama_bank_sampah,
+        id_kelurahan,
+        alamat,
+        no_telepon,
+      ],
+    );
+
+    return result.insertId;
+  }
+
+  static async update(id, data) {
+    const { nama_bank_sampah, id_kelurahan, alamat, no_telepon } = data;
+
+    await db.query(
+      `
+      UPDATE bank_sampah
+      SET nama_bank_sampah=?, id_kelurahan=?, alamat=?, no_telepon=?
+      WHERE id_bank_sampah=?
+    `,
+      [nama_bank_sampah, id_kelurahan, alamat, no_telepon, id],
+    );
+  }
+
+  static async delete(id) {
+    await db.query(
+      `
+      DELETE FROM bank_sampah
+      WHERE id_bank_sampah=?
+    `,
+      [id],
+    );
+  }
+
+  static async getLastUrutan() {
+    const [rows] = await db.query(`
+    SELECT MAX(no_urut_bank) AS last_no
+    FROM bank_sampah
+  `);
+
+    return rows[0].last_no;
+  }
+}
+
+export default BankSampah;
