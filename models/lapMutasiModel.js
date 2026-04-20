@@ -4,11 +4,14 @@ export const getMutasi = async ({
   id_bank_sampah,
   start_date,
   end_date,
-  nomor_rekening,
+  keyword,
   last_id,
   limit,
 }) => {
-  // ================= SAFETY =================
+  if (!id_bank_sampah) {
+    throw new Error("id_bank_sampah tidak valid");
+  }
+
   const safeLimit = Number(limit);
   const finalLimit =
     !isNaN(safeLimit) && safeLimit > 0 && safeLimit <= 100 ? safeLimit : 20;
@@ -26,13 +29,14 @@ export const getMutasi = async ({
       n.nomor_rekening,
       n.nama_nasabah
     FROM mutasi_saldo m
-    JOIN nasabah n ON m.id_nasabah = n.id_nasabah
+    JOIN nasabah n 
+      ON m.id_nasabah = n.id_nasabah
     WHERE m.id_bank_sampah = ?
+      AND n.id_bank_sampah = ?
   `;
 
-  const params = [id_bank_sampah];
+  const params = [id_bank_sampah, id_bank_sampah];
 
-  // FILTER
   if (start_date && end_date) {
     query += ` AND m.created_at BETWEEN ? AND ?`;
     params.push(start_date, end_date);
@@ -44,9 +48,14 @@ export const getMutasi = async ({
     params.push(end_date);
   }
 
-  if (nomor_rekening && nomor_rekening.trim() !== "") {
-    query += ` AND n.nomor_rekening = ?`;
-    params.push(nomor_rekening.trim());
+  if (keyword && keyword.trim() !== "") {
+    query += `
+      AND (
+        n.nama_nasabah LIKE ?
+        OR n.nomor_rekening LIKE ?
+      )
+    `;
+    params.push(`%${keyword.trim()}%`, `%${keyword.trim()}%`);
   }
 
   if (!isNaN(safeLastId) && safeLastId > 0) {
@@ -54,9 +63,53 @@ export const getMutasi = async ({
     params.push(safeLastId);
   }
 
-  // 🔥 FIX DI SINI (BUANG PARAM LIMIT)
   query += ` ORDER BY m.id_mutasi DESC LIMIT ${finalLimit}`;
 
   const [rows] = await db.execute(query, params);
   return rows;
+};
+
+export const insertMutasi = async ({
+  conn,
+  id_bank_sampah,
+  id_nasabah,
+  tipe,
+  jumlah,
+  referensi_id,
+  referensi_tabel,
+}) => {
+  const [rows] = await conn.execute(
+    `SELECT saldo FROM nasabah WHERE id_nasabah = ? FOR UPDATE`,
+    [id_nasabah],
+  );
+
+  // 🔥 FIX: handle kalau nasabah tidak ditemukan
+  if (!rows.length) {
+    throw new Error("Nasabah tidak ditemukan");
+  }
+
+  const saldo_sebelum = Number(rows[0].saldo || 0);
+  const nominal = Number(jumlah || 0);
+  const saldo_sesudah = saldo_sebelum + nominal;
+
+  await conn.execute(
+    `INSERT INTO mutasi_saldo
+    (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      id_bank_sampah,
+      id_nasabah,
+      tipe,
+      referensi_id,
+      referensi_tabel,
+      nominal,
+      saldo_sebelum,
+      saldo_sesudah,
+    ],
+  );
+
+  await conn.execute(`UPDATE nasabah SET saldo = ? WHERE id_nasabah = ?`, [
+    saldo_sesudah,
+    id_nasabah,
+  ]);
 };

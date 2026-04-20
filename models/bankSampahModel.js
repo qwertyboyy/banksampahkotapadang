@@ -7,33 +7,34 @@ class BankSampah {
     const [rows] = await db.query(
       `
     SELECT 
-      bs.id_bank_sampah,
-      bs.kode_bank_sampah,
-      bs.nama_bank_sampah,
-      bs.no_telepon,
-      kl.nama_kelurahan,
-      kc.nama,
-      COUNT(n.id_nasabah) AS jumlah_nasabah
+  bs.id_bank_sampah,
+  bs.kode_bank_sampah,
+  bs.nama_bank_sampah,
+  bs.no_telepon,
+  kl.nama_kelurahan,
+  kc.nama,
+  (
+    SELECT COUNT(*) 
+    FROM nasabah n 
+    WHERE n.id_bank_sampah = bs.id_bank_sampah
+  ) AS jumlah_nasabah
 
-    FROM bank_sampah bs
+FROM bank_sampah bs
 
-    JOIN kelurahan kl 
-      ON bs.id_kelurahan = kl.id_kelurahan
+JOIN kelurahan kl 
+  ON bs.id_kelurahan = kl.id_kelurahan
 
-    JOIN kecamatan kc 
-      ON kl.id_kecamatan = kc.id_kecamatan
+JOIN kecamatan kc 
+  ON kl.id_kecamatan = kc.id_kecamatan
 
-    LEFT JOIN nasabah n
-      ON bs.id_bank_sampah = n.id_bank_sampah
+WHERE 
+  bs.nama_bank_sampah LIKE ?
+  OR bs.kode_bank_sampah LIKE ?
+  OR kl.nama_kelurahan LIKE ?
 
-    WHERE 
-      bs.nama_bank_sampah LIKE ?
-      OR bs.kode_bank_sampah LIKE ?
-      OR kl.nama_kelurahan LIKE ?
+ORDER BY bs.id_bank_sampah DESC
 
-    GROUP BY bs.id_bank_sampah
-
-    LIMIT ? OFFSET ?
+LIMIT ? OFFSET ?
     `,
       [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset],
     );

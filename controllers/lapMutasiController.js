@@ -4,7 +4,7 @@ import PDFDocument from "pdfkit";
 
 export const getMutasi = async (req, res) => {
   try {
-    const { start_date, end_date, nomor_rekening, last_id, limit } = req.query;
+    const { start_date, end_date, keyword, last_id, limit } = req.query;
 
     const id_bank_sampah = req.user?.id_bank_sampah;
 
@@ -20,21 +20,18 @@ export const getMutasi = async (req, res) => {
       });
     }
 
-    console.log("REQ.USER:", req.user);
-    console.log("ID BANK:", req.user?.id_bank_sampah);
-
     const data = await mutasiModel.getMutasi({
       id_bank_sampah,
       start_date,
       end_date,
-      nomor_rekening,
+      keyword,
       last_id,
       limit,
     });
 
     res.json({
       success: true,
-      data,
+      data: data || [],
     });
   } catch (err) {
     console.error(err);
@@ -67,7 +64,14 @@ export const exportExcel = async (req, res) => {
       { header: "Saldo", key: "saldo_sesudah" },
     ];
 
-    ws.addRows(data);
+    // 🔥 FIX: parsing angka biar ga NaN di Excel
+    const safeData = (data || []).map((d) => ({
+      ...d,
+      jumlah: Number(d.jumlah || 0),
+      saldo_sesudah: Number(d.saldo_sesudah || 0),
+    }));
+
+    ws.addRows(safeData);
 
     res.setHeader(
       "Content-Type",
@@ -77,6 +81,7 @@ export const exportExcel = async (req, res) => {
     await wb.xlsx.write(res);
     res.end();
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -91,19 +96,113 @@ export const exportPDF = async (req, res) => {
       limit: 1000,
     });
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 50 });
 
     res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline; filename=laporan-mutasi.pdf");
+
     doc.pipe(res);
 
-    data.forEach((row) => {
+    // ================= TITLE =================
+    doc
+      .fontSize(16)
+      .font("Helvetica-Bold")
+      .text("MUTASI REKENING NASABAH", { align: "center" });
+
+    doc.moveDown(1);
+
+    const startX = 50;
+    let startY = 100;
+
+    const col = {
+      tanggal: startX,
+      rekening: startX + 100,
+      nama: startX + 200,
+      tipe: startX + 330,
+      jumlah: startX + 380,
+      saldo: startX + 460,
+    };
+
+    // ================= HEADER =================
+    doc.fontSize(10).font("Helvetica-Bold");
+
+    doc.text("Tanggal", col.tanggal, startY);
+    doc.text("Rekening", col.rekening, startY);
+    doc.text("Nama", col.nama, startY);
+    doc.text("Tipe", col.tipe, startY);
+    doc.text("Jumlah", col.jumlah, startY, { width: 70, align: "right" });
+    doc.text("Saldo", col.saldo, startY, { width: 80, align: "right" });
+
+    startY += 20;
+
+    doc
+      .moveTo(startX, startY - 5)
+      .lineTo(550, startY - 5)
+      .stroke();
+
+    // ================= DATA =================
+    doc.font("Helvetica").fontSize(9);
+
+    (data || []).forEach((row) => {
+      if (startY > 750) {
+        doc.addPage();
+        startY = 100;
+
+        doc.font("Helvetica-Bold");
+
+        doc.text("Tanggal", col.tanggal, startY);
+        doc.text("Rekening", col.rekening, startY);
+        doc.text("Nama", col.nama, startY);
+        doc.text("Tipe", col.tipe, startY);
+        doc.text("Jumlah", col.jumlah, startY, { width: 70, align: "right" });
+        doc.text("Saldo", col.saldo, startY, { width: 80, align: "right" });
+
+        startY += 20;
+
+        doc
+          .moveTo(startX, startY - 5)
+          .lineTo(550, startY - 5)
+          .stroke();
+
+        doc.font("Helvetica");
+      }
+
+      const jumlah = Number(row.jumlah || 0);
+      const saldo = Number(row.saldo_sesudah || 0);
+
       doc.text(
-        `${row.created_at} | ${row.nomor_rekening} | ${row.tipe} | ${row.jumlah}`,
+        row.created_at ? new Date(row.created_at).toLocaleString("id-ID") : "-",
+        col.tanggal,
+        startY,
       );
+
+      doc.text(row.nomor_rekening || "-", col.rekening, startY);
+      doc.text(row.nama_nasabah || "-", col.nama, startY, { width: 120 });
+      doc.text(row.tipe || "-", col.tipe, startY);
+
+      doc.text("Rp " + jumlah.toLocaleString("id-ID"), col.jumlah, startY, {
+        width: 70,
+        align: "right",
+      });
+
+      doc.text("Rp " + saldo.toLocaleString("id-ID"), col.saldo, startY, {
+        width: 80,
+        align: "right",
+      });
+
+      startY += 20;
+
+      doc
+        .moveTo(startX, startY - 5)
+        .lineTo(550, startY - 5)
+        .strokeColor("#eeeeee")
+        .stroke()
+        .strokeColor("#000000");
     });
 
     doc.end();
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };

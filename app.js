@@ -20,7 +20,9 @@ import setorRoutes from "./routes/setorRoutes.js";
 import tarikSaldoRoutes from "./routes/tarikSaldoRoutes.js";
 import pengepulRoutes from "./routes/pengepulRoutes.js";
 import penjualanRoutes from "./routes/penjualanRoutes.js";
+import riwayatTransaksi from "./routes/riwayatRoute.js";
 import lapMutasiRoutes from "./routes/lapMutasiRoute.js";
+import lapSaldoRoutes from "./routes/lapSaldoRoutes.js";
 
 const app = express();
 app.use(
@@ -43,6 +45,8 @@ app.use("/api/", tarikSaldoRoutes);
 app.use("/api/pengepul", pengepulRoutes);
 app.use("/api/penjualan", penjualanRoutes);
 app.use("/api/lap-mutasi", lapMutasiRoutes);
+app.use("/api/lap-saldo", lapSaldoRoutes);
+app.use("/api/riwayat", riwayatTransaksi);
 
 app.get("/", (req, res) => res.send("API Bank Sampah Running"));
 

@@ -121,7 +121,6 @@ export const login = async (req, res) => {
         id_nasabah: user.id_nasabah,
       },
     });
-    console.log("USER LOGIN:", req.user);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
