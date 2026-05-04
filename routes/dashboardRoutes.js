@@ -3,7 +3,6 @@ import {
   getDashboardStats,
   getSetoranChart,
   getJenisSampahChart,
-<<<<<<< HEAD
   getChartKeuangan,
   getDashboardNasabah,
   updateProfilNasabah,
@@ -67,15 +66,5 @@ router.get(
   roleMiddleware("nasabah"),
   getStatSetorNasabah,
 );
-=======
-} from "../controllers/dashboardController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
-
-const router = express.Router();
-
-router.get("/stats", authMiddleware, getDashboardStats);
-router.get("/chart-setoran", authMiddleware, getSetoranChart);
-router.get("/chart-jenis-sampah", authMiddleware, getJenisSampahChart);
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
 export default router;

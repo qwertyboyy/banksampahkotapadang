@@ -119,7 +119,6 @@ LIMIT ? OFFSET ?
 
     return rows[0].last_no;
   }
-<<<<<<< HEAD
 
   static async getById(id) {
     const [rows] = await db.query(
@@ -181,8 +180,6 @@ LIMIT ? OFFSET ?
 
     await db.query(query, params);
   }
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 }
 
 export default BankSampah;

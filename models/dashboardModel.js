@@ -142,7 +142,6 @@ class DashboardModel {
 
     return rows;
   }
-<<<<<<< HEAD
 
   static async getChartKeuangan(tahun, id_bank_sampah = null) {
     let query = `
@@ -267,8 +266,6 @@ class DashboardModel {
 
     return rows[0];
   }
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 }
 
 export default DashboardModel;

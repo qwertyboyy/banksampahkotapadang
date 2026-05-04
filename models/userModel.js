@@ -1,11 +1,7 @@
 import pool from "../config/db.js";
 import bcrypt from "bcryptjs";
 
-<<<<<<< HEAD
 export const loginUser = async (identifier) => {
-=======
-export const loginUser = async (username) => {
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   const [rows] = await pool.query(
     `SELECT 
         u.id_user,
@@ -17,7 +13,6 @@ export const loginUser = async (username) => {
         u.id_bank_sampah,
         b.nama_bank_sampah,
         u.id_nasabah,
-<<<<<<< HEAD
         u.status_aktif,
         u.status_akun
      FROM users u
@@ -26,15 +21,6 @@ export const loginUser = async (username) => {
      WHERE u.username = ? OR u.email = ?
      LIMIT 1`,
     [identifier, identifier],
-=======
-        u.status_aktif
-     FROM users u
-     LEFT JOIN bank_sampah b 
-     ON u.id_bank_sampah = b.id_bank_sampah
-     WHERE u.username = ?
-     LIMIT 1`,
-    [username],
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   );
 
   return rows[0] || null;
@@ -235,7 +221,6 @@ export const unActivateUser = async (id_user) => {
 
   return result.affectedRows;
 };
-<<<<<<< HEAD
 
 // ================= OTP =================
 
@@ -259,5 +244,3 @@ export const findUserByToken = async (token) => {
 
   return rows[0] || null;
 };
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07

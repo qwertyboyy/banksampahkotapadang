@@ -1,10 +1,7 @@
 import db from "../config/db.js";
 
 const NasabahModel = {
-<<<<<<< HEAD
   // ================= BANK =================
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getBankSampahWithCount: async () => {
     const query = `
       SELECT 
@@ -22,10 +19,7 @@ const NasabahModel = {
     return rows;
   },
 
-<<<<<<< HEAD
   // ================= LIST NASABAH =================
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getNasabahByBank: async (id_bank_sampah, limit, offset, search) => {
     let searchQuery = "";
     let params = [id_bank_sampah];
@@ -38,10 +32,6 @@ const NasabahModel = {
           OR no_hp LIKE ?
         )
       `;
-<<<<<<< HEAD
-=======
-
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
@@ -65,10 +55,6 @@ const NasabahModel = {
     params.push(limit, offset);
 
     const [rows] = await db.query(query, params);
-<<<<<<< HEAD
-=======
-
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     return rows;
   },
 
@@ -84,10 +70,6 @@ const NasabahModel = {
           OR no_hp LIKE ?
         )
       `;
-<<<<<<< HEAD
-=======
-
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
@@ -99,7 +81,6 @@ const NasabahModel = {
     `;
 
     const [rows] = await db.query(query, params);
-<<<<<<< HEAD
     return rows[0].total;
   },
 
@@ -115,64 +96,32 @@ const NasabahModel = {
     console.log("ID BANK MASUK:", id_bank_sampah);
     console.log("HASIL BANK:", bank);
 
-=======
-
-    return rows[0].total;
-  },
-
-  // GENERATE NOMOR REKENING
-  generateNomorRekening: async (id_bank_sampah) => {
-    // ambil kode bank
-    const [bank] = await db.query(
-      `SELECT kode_bank_sampah
-     FROM bank_sampah
-     WHERE id_bank_sampah = ?`,
-      [id_bank_sampah],
-    );
-
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     if (!bank.length) {
       throw new Error("Bank sampah tidak ditemukan");
     }
 
     const kode = bank[0].kode_bank_sampah;
 
-<<<<<<< HEAD
     const [counter] = await conn.query(
       `SELECT last_nomor_urut
        FROM counter_nasabah
        WHERE id_bank_sampah = ?
        FOR UPDATE`,
-=======
-    // ambil counter
-    const [counter] = await db.query(
-      `SELECT last_nomor_urut
-     FROM counter_nasabah
-     WHERE id_bank_sampah = ?`,
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       [id_bank_sampah],
     );
 
     let last = 0;
 
     if (!counter.length) {
-<<<<<<< HEAD
       await conn.query(
         `INSERT INTO counter_nasabah (id_bank_sampah, last_nomor_urut)
          VALUES (?, 0)`,
-=======
-      // kalau belum ada, buat default
-      await db.query(
-        `INSERT INTO counter_nasabah (id_bank_sampah, last_nomor_urut)
-       VALUES (?, 0)`,
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
         [id_bank_sampah],
       );
     } else {
       last = counter[0].last_nomor_urut;
     }
 
-<<<<<<< HEAD
     const nomor_urut = last + 1;
 
     const nomor_rekening = `${kode}${String(nomor_urut).padStart(5, "0")}`;
@@ -200,25 +149,6 @@ const NasabahModel = {
       (id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, nik, alamat, no_hp, status_aktif)
       VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     `;
-=======
-    const nomorUrut = last + 1;
-
-    const nomorRekening = `${kode}${String(nomorUrut).padStart(5, "0")}`;
-
-    return {
-      nomor_urut: nomorUrut,
-      nomor_rekening: nomorRekening,
-    };
-  },
-
-  // INSERT NASABAH
-  createNasabah: async (data) => {
-    const query = `
-  INSERT INTO nasabah
-(id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, nik, alamat, no_hp, status_aktif)
-VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-  `;
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
     await db.query(query, [
       data.id_bank_sampah,
@@ -231,7 +161,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     ]);
   },
 
-<<<<<<< HEAD
   // ================= UPDATE =================
   updateNasabah: async (id_nasabah, data) => {
     const query = `
@@ -244,35 +173,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         status_aktif = ?
       WHERE id_nasabah = ?
     `;
-=======
-  increaseCounter: async () => {
-    await db.query(
-      `UPDATE counter_nasabah
-     SET last_nomor_urut = last_nomor_urut + 1`,
-    );
-  },
-
-  updateCounterNasabah: async (id_bank_sampah, nomor_urut) => {
-    await db.query(
-      `UPDATE counter_nasabah
-     SET last_nomor_urut = ?
-     WHERE id_bank_sampah = ?`,
-      [nomor_urut, id_bank_sampah],
-    );
-  },
-
-  updateNasabah: async (id_nasabah, data) => {
-    const query = `
-    UPDATE nasabah
-    SET
-      nama_nasabah = ?,
-      nik = ?,
-      alamat = ?,
-      no_hp = ?,
-      status_aktif = ?
-    WHERE id_nasabah = ?
-  `;
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
     await db.query(query, [
       data.nama_nasabah,
@@ -284,34 +184,22 @@ VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     ]);
   },
 
-<<<<<<< HEAD
   // ================= SELECT =================
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getNasabahSelect: async (id_bank_sampah, keyword = "") => {
     let searchQuery = "";
     let params = [id_bank_sampah];
 
     if (keyword) {
       searchQuery = `
-<<<<<<< HEAD
         AND (
           nama_nasabah LIKE ?
           OR nomor_rekening LIKE ?
         )
       `;
-=======
-      AND (
-        nama_nasabah LIKE ?
-        OR nomor_rekening LIKE ?
-      )
-    `;
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       params.push(`%${keyword}%`, `%${keyword}%`);
     }
 
     const query = `
-<<<<<<< HEAD
       SELECT 
         id_nasabah,
         nama_nasabah,
@@ -324,47 +212,22 @@ VALUES (?, ?, ?, ?, ?, ?, ?, 1)
       ORDER BY nama_nasabah
       LIMIT 20
     `;
-=======
-    SELECT 
-      id_nasabah,
-      nama_nasabah,
-      nomor_rekening,
-      saldo
-    FROM nasabah
-    WHERE id_bank_sampah = ?
-    AND status_aktif = 1
-    ${searchQuery}
-    ORDER BY nama_nasabah
-    LIMIT 20
-  `;
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
     const [rows] = await db.query(query, params);
     return rows;
   },
 
-<<<<<<< HEAD
   // ================= DELETE =================
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   deleteNasabah: async (id_nasabah) => {
     await db.query(`DELETE FROM nasabah WHERE id_nasabah = ?`, [id_nasabah]);
   },
 
-<<<<<<< HEAD
   // ================= SALDO =================
   getSaldoNasabah: async (id_nasabah, id_bank_sampah) => {
     const [rows] = await db.query(
       `SELECT saldo 
        FROM nasabah 
        WHERE id_nasabah = ? AND id_bank_sampah = ?`,
-=======
-  getSaldoNasabah: async (id_nasabah, id_bank_sampah) => {
-    const [rows] = await db.query(
-      `SELECT saldo 
-     FROM nasabah 
-     WHERE id_nasabah = ? AND id_bank_sampah = ?`,
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       [id_nasabah, id_bank_sampah],
     );
 

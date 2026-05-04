@@ -93,7 +93,6 @@ export const deleteBankSampah = async (req, res) => {
     });
   }
 };
-<<<<<<< HEAD
 
 export const getSettingBankSampah = async (req, res) => {
   try {
@@ -139,5 +138,3 @@ export const updateSettingBankSampah = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07

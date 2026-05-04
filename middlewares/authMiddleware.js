@@ -16,26 +16,19 @@ export const authMiddleware = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-<<<<<<< HEAD
     // 🔥 VALIDASI ADMIN
-=======
-    // validasi role admin_bank
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     if (decoded.role === "admin_bank" && !decoded.id_bank_sampah) {
       return res.status(403).json({
         message: "Admin bank harus memiliki id_bank_sampah",
       });
     }
 
-<<<<<<< HEAD
     // 🔥 VALIDASI NASABAH
     if (decoded.role === "nasabah" && !decoded.id_nasabah) {
       return res.status(403).json({
         message: "Nasabah tidak valid",
       });
     }
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     req.user = decoded;
 
     next();
@@ -45,7 +38,6 @@ export const authMiddleware = (req, res, next) => {
     });
   }
 };
-<<<<<<< HEAD
 
 export const roleMiddleware = (...roles) => {
   return (req, res, next) => {
@@ -57,5 +49,3 @@ export const roleMiddleware = (...roles) => {
     next();
   };
 };
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07

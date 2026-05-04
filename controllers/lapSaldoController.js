@@ -1,14 +1,9 @@
 import * as saldoModel from "../models/lapSaldoModel.js";
-<<<<<<< HEAD
 import db from "../config/db.js";
 import PDFDocument from "pdfkit";
 import ExcelJS from "exceljs";
 import path from "path";
 import fs from "fs";
-=======
-import PDFDocument from "pdfkit";
-import ExcelJS from "exceljs";
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
 export const getSaldoNasabah = async (req, res) => {
   try {
@@ -93,14 +88,11 @@ export const exportSaldoPDF = async (req, res) => {
   try {
     const id_bank_sampah = req.user.id_bank_sampah;
 
-<<<<<<< HEAD
     const [[bank]] = await db.query(
       "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
       [id_bank_sampah],
     );
 
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     const data = await saldoModel.getSaldoNasabah({
       id_bank_sampah,
       ...req.query,
@@ -113,7 +105,6 @@ export const exportSaldoPDF = async (req, res) => {
 
     doc.pipe(res);
 
-<<<<<<< HEAD
     // ================= DESIGN =================
     const COLOR = {
       primary: "#1a5276",
@@ -371,79 +362,6 @@ export const exportSaldoPDF = async (req, res) => {
       drawTableBorder(yPos, ROW_H);
     }
 
-=======
-    // ================= TITLE =================
-    doc
-      .fontSize(16)
-      .font("Helvetica-Bold")
-      .text("LAPORAN SALDO NASABAH", { align: "center" });
-
-    doc.moveDown();
-
-    // ================= KOLOM =================
-    const startX = 40;
-    let startY = 100;
-
-    const col = {
-      nama: startX,
-      rekening: startX + 180,
-      saldo: startX + 300,
-      tanggal: startX + 400,
-    };
-
-    // ================= HEADER =================
-    doc.fontSize(10).font("Helvetica-Bold");
-
-    doc.text("Nama", col.nama, startY);
-    doc.text("Rekening", col.rekening, startY);
-    doc.text("Saldo", col.saldo, startY, { width: 80, align: "right" });
-    doc.text("Update", col.tanggal, startY);
-
-    startY += 20;
-
-    doc
-      .moveTo(startX, startY - 5)
-      .lineTo(550, startY - 5)
-      .stroke();
-
-    // ================= DATA =================
-    doc.font("Helvetica").fontSize(9);
-
-    data.forEach((row) => {
-      if (startY > 750) {
-        doc.addPage();
-        startY = 100;
-      }
-
-      doc.text(row.nama_nasabah, col.nama, startY, { width: 160 });
-
-      doc.text(row.nomor_rekening, col.rekening, startY);
-
-      doc.text(
-        "Rp " + Number(row.saldo_sesudah).toLocaleString("id-ID"),
-        col.saldo,
-        startY,
-        { width: 80, align: "right" },
-      );
-
-      doc.text(
-        new Date(row.created_at).toLocaleDateString("id-ID"),
-        col.tanggal,
-        startY,
-      );
-
-      startY += 20;
-
-      // garis antar row
-      doc
-        .moveTo(startX, startY - 5)
-        .lineTo(550, startY - 5)
-        .strokeColor("#eeeeee")
-        .stroke()
-        .strokeColor("#000000");
-    });
-
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     doc.end();
   } catch (err) {
     console.error(err);

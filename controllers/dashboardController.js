@@ -1,8 +1,5 @@
 import DashboardModel from "../models/dashboardModel.js";
-<<<<<<< HEAD
 import db from "../config/db.js";
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
 export const getDashboardStats = async (req, res) => {
   try {
@@ -104,7 +101,6 @@ export const getJenisSampahChart = async (req, res) => {
     res.status(500).json({ message: "Error mengambil data jenis sampah" });
   }
 };
-<<<<<<< HEAD
 
 export const getChartKeuangan = async (req, res) => {
   try {
@@ -235,5 +231,3 @@ export const getStatSetorNasabah = async (req, res) => {
     });
   }
 };
-=======
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
