@@ -1,4 +1,5 @@
 import express from "express";
+<<<<<<< HEAD
 import {
   register, // lama (optional dipertahankan)
   login,
@@ -35,4 +36,13 @@ router.get("/pending", authMiddleware, getPendingUsers);
 router.put("/approve/:id_user", authMiddleware, approveUser);
 router.put("/reject/:id_user", authMiddleware, rejectUser);
 
+=======
+import { register, login } from "../controllers/authController.js";
+
+const router = express.Router();
+
+router.post("/register", register);
+router.post("/login", login);
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 export default router;

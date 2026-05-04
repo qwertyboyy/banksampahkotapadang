@@ -1,13 +1,20 @@
 import NasabahModel from "../models/nasabahModel.js";
+<<<<<<< HEAD
 import pool from "../config/db.js";
 
 const NasabahController = {
   // ================= SUPERADMIN =================
 
+=======
+
+const NasabahController = {
+  // SUPERADMIN
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getBankSampahNasabah: async (req, res) => {
     try {
       const data = await NasabahModel.getBankSampahWithCount();
 
+<<<<<<< HEAD
       res.json({ success: true, data });
     } catch (error) {
       console.error("ERROR getBankSampahNasabah:", error);
@@ -21,6 +28,29 @@ const NasabahController = {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search || "";
+=======
+      res.json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // SUPERADMIN
+  getNasabahByBank: async (req, res) => {
+    try {
+      const { id_bank_sampah } = req.params;
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search || "";
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       const offset = (page - 1) * limit;
 
       const data = await NasabahModel.getNasabahByBank(
@@ -35,6 +65,7 @@ const NasabahController = {
         search,
       );
 
+<<<<<<< HEAD
       res.json({ success: true, data, total, page, limit });
     } catch (error) {
       console.error("ERROR getNasabahByBank:", error);
@@ -50,6 +81,34 @@ const NasabahController = {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search || "";
+=======
+      res.json({
+        success: true,
+        data,
+        total,
+        page,
+        limit,
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // ADMIN BANK
+  getNasabahAdminBank: async (req, res) => {
+    try {
+      const id_bank_sampah = req.user.id_bank_sampah;
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search || "";
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       const offset = (page - 1) * limit;
 
       const data = await NasabahModel.getNasabahByBank(
@@ -64,6 +123,7 @@ const NasabahController = {
         search,
       );
 
+<<<<<<< HEAD
       res.json({ success: true, data, total, page, limit });
     } catch (error) {
       console.error("ERROR getNasabahAdminBank:", error);
@@ -107,24 +167,71 @@ const NasabahController = {
 
       await NasabahModel.updateCounterNasabah(
         conn,
-        id_bank_sampah,
-        rekening.nomor_urut,
-      );
-
-      await conn.commit();
-
+=======
       res.json({
         success: true,
-        nomor_rekening: rekening.nomor_rekening,
+        data,
+        total,
+        page,
+        limit,
       });
     } catch (error) {
-      await conn.rollback();
-      console.error("ERROR createNasabah:", error);
+      console.error(error);
 
       res.status(500).json({
         success: false,
         message: error.message,
       });
+    }
+  },
+
+  // CREATE NASABAH
+  createNasabah: async (req, res) => {
+    try {
+      const id_bank_sampah = req.user.id_bank_sampah;
+
+      const { nama_nasabah, nik, alamat, no_hp } = req.body;
+
+      const rekening = await NasabahModel.generateNomorRekening(id_bank_sampah);
+
+      await NasabahModel.createNasabah({
+        id_bank_sampah,
+        nomor_urut: rekening.nomor_urut,
+        nomor_rekening: rekening.nomor_rekening,
+        nama_nasabah,
+        nik,
+        alamat,
+        no_hp,
+      });
+
+      await NasabahModel.updateCounterNasabah(
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
+        id_bank_sampah,
+        rekening.nomor_urut,
+      );
+
+<<<<<<< HEAD
+      await conn.commit();
+
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
+      res.json({
+        success: true,
+        nomor_rekening: rekening.nomor_rekening,
+      });
+    } catch (error) {
+<<<<<<< HEAD
+      await conn.rollback();
+      console.error("ERROR createNasabah:", error);
+=======
+      console.error(error);
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+<<<<<<< HEAD
     } finally {
       conn.release();
     }
@@ -173,6 +280,30 @@ const NasabahController = {
   updateNasabah: async (req, res) => {
     try {
       const { id_nasabah } = req.params;
+=======
+    }
+  },
+  previewRekening: async (req, res) => {
+    try {
+      const id_bank_sampah = req.user.id_bank_sampah;
+
+      const rekening = await NasabahModel.generateNomorRekening(id_bank_sampah);
+
+      res.json({
+        nomor_rekening: rekening.nomor_rekening,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  },
+
+  updateNasabah: async (req, res) => {
+    try {
+      const { id_nasabah } = req.params;
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       const { nama_nasabah, nik, alamat, no_hp, status_aktif } = req.body;
 
       await NasabahModel.updateNasabah(id_nasabah, {
@@ -188,6 +319,7 @@ const NasabahController = {
         message: "Nasabah berhasil diperbarui",
       });
     } catch (error) {
+<<<<<<< HEAD
       console.error("ERROR updateNasabah:", error);
       res.status(500).json({ success: false, message: error.message });
     }
@@ -195,6 +327,15 @@ const NasabahController = {
 
   // ================= DELETE =================
 
+=======
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   deleteNasabah: async (req, res) => {
     try {
       const { id_nasabah } = req.params;
@@ -206,6 +347,7 @@ const NasabahController = {
         message: "Nasabah berhasil dihapus",
       });
     } catch (error) {
+<<<<<<< HEAD
       console.error("ERROR deleteNasabah:", error);
       res.status(500).json({ success: false, message: error.message });
     }
@@ -213,6 +355,15 @@ const NasabahController = {
 
   // ================= SELECT =================
 
+=======
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getNasabahSelect: async (req, res) => {
     try {
       const id_bank_sampah = req.user.id_bank_sampah;
@@ -222,6 +373,7 @@ const NasabahController = {
 
       res.json(data);
     } catch (error) {
+<<<<<<< HEAD
       console.error("ERROR getNasabahSelect:", error);
       res.status(500).json({ message: error.message });
     }
@@ -229,6 +381,14 @@ const NasabahController = {
 
   // ================= SALDO =================
 
+=======
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  },
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
   getSaldoNasabah: async (req, res) => {
     try {
       if (!req.user) {
@@ -244,15 +404,27 @@ const NasabahController = {
       );
 
       if (!data) {
+<<<<<<< HEAD
         return res.status(404).json({
           message: "Nasabah tidak ditemukan",
         });
+=======
+        return res.status(404).json({ message: "Nasabah tidak ditemukan" });
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
       }
 
       res.json(data);
     } catch (err) {
+<<<<<<< HEAD
       console.error("ERROR getSaldoNasabah:", err);
       res.status(500).json({ message: err.message });
+=======
+      console.error("ERROR CONTROLLER:", err.message);
+
+      res.status(500).json({
+        message: err.message,
+      });
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     }
   },
 };

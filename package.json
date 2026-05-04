@@ -24,10 +24,14 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "jwt-decode": "^4.0.0",
+<<<<<<< HEAD
     "multer": "^2.1.1",
     "mysql2": "^3.18.2",
     "nodemailer": "^8.0.7",
     "path": "^0.12.7",
+=======
+    "mysql2": "^3.18.2",
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     "pdfkit": "^0.18.0"
   },
   "devDependencies": {

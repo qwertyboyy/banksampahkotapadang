@@ -1,9 +1,12 @@
 import * as mutasiModel from "../models/lapMutasiModel.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
+<<<<<<< HEAD
 import fs from "fs";
 import path from "path";
 import db from "../config/db.js";
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
 export const getMutasi = async (req, res) => {
   try {
@@ -30,7 +33,10 @@ export const getMutasi = async (req, res) => {
       keyword,
       last_id,
       limit,
+<<<<<<< HEAD
       no_limit: false,
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     });
 
     res.json({
@@ -53,7 +59,11 @@ export const exportExcel = async (req, res) => {
     const data = await mutasiModel.getMutasi({
       id_bank_sampah,
       ...req.query,
+<<<<<<< HEAD
       no_limit: true,
+=======
+      limit: 1000,
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     });
 
     const wb = new ExcelJS.Workbook();
@@ -94,6 +104,7 @@ export const exportPDF = async (req, res) => {
   try {
     const id_bank_sampah = req.user.id_bank_sampah;
 
+<<<<<<< HEAD
     const [[bank]] = await db.query(
       "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
       [id_bank_sampah],
@@ -106,12 +117,22 @@ export const exportPDF = async (req, res) => {
     });
 
     const doc = new PDFDocument({ margin: 40 });
+=======
+    const data = await mutasiModel.getMutasi({
+      id_bank_sampah,
+      ...req.query,
+      limit: 1000,
+    });
+
+    const doc = new PDFDocument({ margin: 50 });
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline; filename=laporan-mutasi.pdf");
 
     doc.pipe(res);
 
+<<<<<<< HEAD
     // ================= DESIGN =================
     const COLOR = {
       primary: "#1a5276",
@@ -322,6 +343,103 @@ export const exportPDF = async (req, res) => {
 
       yPos += ROW_H;
       isEven = !isEven;
+=======
+    // ================= TITLE =================
+    doc
+      .fontSize(16)
+      .font("Helvetica-Bold")
+      .text("MUTASI REKENING NASABAH", { align: "center" });
+
+    doc.moveDown(1);
+
+    const startX = 50;
+    let startY = 100;
+
+    const col = {
+      tanggal: startX,
+      rekening: startX + 100,
+      nama: startX + 200,
+      tipe: startX + 330,
+      jumlah: startX + 380,
+      saldo: startX + 460,
+    };
+
+    // ================= HEADER =================
+    doc.fontSize(10).font("Helvetica-Bold");
+
+    doc.text("Tanggal", col.tanggal, startY);
+    doc.text("Rekening", col.rekening, startY);
+    doc.text("Nama", col.nama, startY);
+    doc.text("Tipe", col.tipe, startY);
+    doc.text("Jumlah", col.jumlah, startY, { width: 70, align: "right" });
+    doc.text("Saldo", col.saldo, startY, { width: 80, align: "right" });
+
+    startY += 20;
+
+    doc
+      .moveTo(startX, startY - 5)
+      .lineTo(550, startY - 5)
+      .stroke();
+
+    // ================= DATA =================
+    doc.font("Helvetica").fontSize(9);
+
+    (data || []).forEach((row) => {
+      if (startY > 750) {
+        doc.addPage();
+        startY = 100;
+
+        doc.font("Helvetica-Bold");
+
+        doc.text("Tanggal", col.tanggal, startY);
+        doc.text("Rekening", col.rekening, startY);
+        doc.text("Nama", col.nama, startY);
+        doc.text("Tipe", col.tipe, startY);
+        doc.text("Jumlah", col.jumlah, startY, { width: 70, align: "right" });
+        doc.text("Saldo", col.saldo, startY, { width: 80, align: "right" });
+
+        startY += 20;
+
+        doc
+          .moveTo(startX, startY - 5)
+          .lineTo(550, startY - 5)
+          .stroke();
+
+        doc.font("Helvetica");
+      }
+
+      const jumlah = Number(row.jumlah || 0);
+      const saldo = Number(row.saldo_sesudah || 0);
+
+      doc.text(
+        row.created_at ? new Date(row.created_at).toLocaleString("id-ID") : "-",
+        col.tanggal,
+        startY,
+      );
+
+      doc.text(row.nomor_rekening || "-", col.rekening, startY);
+      doc.text(row.nama_nasabah || "-", col.nama, startY, { width: 120 });
+      doc.text(row.tipe || "-", col.tipe, startY);
+
+      doc.text("Rp " + jumlah.toLocaleString("id-ID"), col.jumlah, startY, {
+        width: 70,
+        align: "right",
+      });
+
+      doc.text("Rp " + saldo.toLocaleString("id-ID"), col.saldo, startY, {
+        width: 80,
+        align: "right",
+      });
+
+      startY += 20;
+
+      doc
+        .moveTo(startX, startY - 5)
+        .lineTo(550, startY - 5)
+        .strokeColor("#eeeeee")
+        .stroke()
+        .strokeColor("#000000");
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     });
 
     doc.end();

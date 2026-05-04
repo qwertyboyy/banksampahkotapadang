@@ -9,7 +9,10 @@ dotenv.config({
   path: `.env.${env}`,
 });
 
+<<<<<<< HEAD
 // Routes
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
@@ -24,6 +27,7 @@ import penjualanRoutes from "./routes/penjualanRoutes.js";
 import riwayatTransaksi from "./routes/riwayatRoute.js";
 import lapMutasiRoutes from "./routes/lapMutasiRoute.js";
 import lapSaldoRoutes from "./routes/lapSaldoRoutes.js";
+<<<<<<< HEAD
 import lapPenjualanRoutes from "./routes/lapPenjualanRoute.js";
 import lapKinerjaRoutes from "./Routes/lapKinerjaRoutes.js";
 
@@ -61,6 +65,18 @@ app.use(express.json());
 /**
  * ✅ ROUTES
  */
+=======
+
+const app = express();
+app.use(
+  cors({
+    origin: "*",
+  }),
+);
+app.use(express.json());
+
+// Routes
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 app.use("/api/auth", authRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
@@ -75,6 +91,7 @@ app.use("/api/penjualan", penjualanRoutes);
 app.use("/api/lap-mutasi", lapMutasiRoutes);
 app.use("/api/lap-saldo", lapSaldoRoutes);
 app.use("/api/riwayat", riwayatTransaksi);
+<<<<<<< HEAD
 app.use("/api/lap-penjualan", lapPenjualanRoutes);
 app.use("/api/lap-kinerja", lapKinerjaRoutes);
 
@@ -86,6 +103,11 @@ app.get("/", (req, res) => res.send("API Bank Sampah Running"));
 /**
  * START SERVER
  */
+=======
+
+app.get("/", (req, res) => res.send("API Bank Sampah Running"));
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 const PORT = config.app.port;
 
 app.listen(PORT, () => {

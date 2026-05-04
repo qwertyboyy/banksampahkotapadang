@@ -7,17 +7,28 @@ export const getMutasi = async ({
   keyword,
   last_id,
   limit,
+<<<<<<< HEAD
   no_limit = false,
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 }) => {
   if (!id_bank_sampah) {
     throw new Error("id_bank_sampah tidak valid");
   }
 
+<<<<<<< HEAD
   // ================= NORMALIZE INPUT =================
   const safeStart = start_date || null;
   const safeEnd = end_date || null;
   const safeKeyword = keyword?.trim() || null;
   const safeLastId = Number(last_id) || null;
+=======
+  const safeLimit = Number(limit);
+  const finalLimit =
+    !isNaN(safeLimit) && safeLimit > 0 && safeLimit <= 100 ? safeLimit : 20;
+
+  const safeLastId = Number(last_id);
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
   let query = `
     SELECT 
@@ -38,6 +49,7 @@ export const getMutasi = async ({
 
   const params = [id_bank_sampah, id_bank_sampah];
 
+<<<<<<< HEAD
   // ================= FILTER TANGGAL =================
   if (safeStart && safeEnd) {
     query += ` AND m.created_at BETWEEN ? AND ?`;
@@ -52,21 +64,43 @@ export const getMutasi = async ({
 
   // ================= FILTER KEYWORD =================
   if (safeKeyword) {
+=======
+  if (start_date && end_date) {
+    query += ` AND m.created_at BETWEEN ? AND ?`;
+    params.push(start_date, end_date);
+  } else if (start_date) {
+    query += ` AND m.created_at >= ?`;
+    params.push(start_date);
+  } else if (end_date) {
+    query += ` AND m.created_at <= ?`;
+    params.push(end_date);
+  }
+
+  if (keyword && keyword.trim() !== "") {
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     query += `
       AND (
         n.nama_nasabah LIKE ?
         OR n.nomor_rekening LIKE ?
       )
     `;
+<<<<<<< HEAD
     params.push(`%${safeKeyword}%`, `%${safeKeyword}%`);
   }
 
   // ================= CURSOR PAGINATION =================
   if (safeLastId) {
+=======
+    params.push(`%${keyword.trim()}%`, `%${keyword.trim()}%`);
+  }
+
+  if (!isNaN(safeLastId) && safeLastId > 0) {
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     query += ` AND m.id_mutasi < ?`;
     params.push(safeLastId);
   }
 
+<<<<<<< HEAD
   // ================= ORDER (HARUS 1 KALI) =================
   query += ` ORDER BY n.nomor_rekening ASC`;
 
@@ -82,6 +116,9 @@ export const getMutasi = async ({
   // ================= DEBUG (optional, bisa hapus nanti) =================
   // console.log("QUERY:", query);
   // console.log("PARAMS:", params);
+=======
+  query += ` ORDER BY m.id_mutasi DESC LIMIT ${finalLimit}`;
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
   const [rows] = await db.execute(query, params);
   return rows;

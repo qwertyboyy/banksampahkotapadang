@@ -28,8 +28,11 @@ export default {
   jwt: {
     secret: process.env.JWT_SECRET,
   },
+<<<<<<< HEAD
   email: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 };

@@ -1,7 +1,10 @@
 import pool from "../config/db.js";
 import bcrypt from "bcryptjs";
 import * as UserModel from "../models/userModel.js";
+<<<<<<< HEAD
 import NasabahModel from "../models/nasabahModel.js";
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
 
 export const login = async (req, res) => {
   try {
@@ -31,7 +34,11 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "8h" },
     );
+<<<<<<< HEAD
     console.log("LOGIN VERSION V2 - IDENTIFIER ACTIVE");
+=======
+
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     res.json({
       token,
       user: {
@@ -91,6 +98,7 @@ export const addUser = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     const existingEmail = await UserModel.findUserByEmail(email);
 
     if (existingEmail) {
@@ -99,6 +107,8 @@ export const addUser = async (req, res) => {
       });
     }
 
+=======
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     await conn.beginTransaction();
 
     const password_hash = await bcrypt.hash(password, 10);
@@ -107,6 +117,7 @@ export const addUser = async (req, res) => {
 
     if (role === "nasabah") {
       if (!id_bank_sampah) {
+<<<<<<< HEAD
         throw new Error("Bank sampah wajib dipilih");
       }
 
@@ -137,6 +148,18 @@ export const addUser = async (req, res) => {
       );
 
       id_nasabah = result.insertId;
+=======
+        return res.status(400).json({
+          message: "Bank sampah wajib dipilih",
+        });
+      }
+
+      id_nasabah = await UserModel.createNasabah(
+        conn,
+        nama_lengkap,
+        id_bank_sampah,
+      );
+>>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
     }
 
     await UserModel.createUser(conn, {
