@@ -25,7 +25,7 @@ import riwayatTransaksi from "./routes/riwayatRoute.js";
 import lapMutasiRoutes from "./routes/lapMutasiRoute.js";
 import lapSaldoRoutes from "./routes/lapSaldoRoutes.js";
 import lapPenjualanRoutes from "./routes/lapPenjualanRoute.js";
-import lapKinerjaRoutes from "./Routes/lapKinerjaRoutes.js";
+import lapKinerjaRoutes from "./routes/lapKinerjaRoutes.js";
 
 const app = express();
 
