@@ -35,7 +35,8 @@ const app = express();
  */
 const allowedOrigins = [
   "http://localhost:5000", // frontend local
-  "https://api.banksampah.dlh.padang.go.id", // frontend production
+  "https://api.banksampah.dlh.padang.go.id",
+  "https://banksampah.dlh.padang.go.id", // frontend production
   "http://localhost:5173",
 ];
 
