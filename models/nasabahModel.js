@@ -146,7 +146,7 @@ const NasabahModel = {
   createNasabah: async (data) => {
     const query = `
       INSERT INTO nasabah
-      (id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, nik, alamat, no_hp, status_aktif)
+      (id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, nik, alamat, no_hp, saldo, status_aktif)
       VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     `;
 
@@ -209,7 +209,7 @@ const NasabahModel = {
       WHERE id_bank_sampah = ?
       AND status_aktif = 1
       ${searchQuery}
-      ORDER BY nama_nasabah
+      ORDER BY nomor_rekening
       LIMIT 20
     `;
 
