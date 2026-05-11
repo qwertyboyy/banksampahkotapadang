@@ -219,7 +219,9 @@ const NasabahModel = {
 
   // ================= DELETE =================
   deleteNasabah: async (id_nasabah) => {
-    await db.query(`DELETE FROM nasabah WHERE id_nasabah = ?`, [id_nasabah]);
+    await db.query(`UPDATE nasabah SET status_aktif = 0 WHERE id_nasabah = ?`, [
+      id_nasabah,
+    ]);
   },
 
   // ================= SALDO =================
