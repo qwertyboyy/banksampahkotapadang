@@ -26,7 +26,7 @@ router.get(
 );
 router.put("/:id_nasabah", authMiddleware, NasabahController.updateNasabah);
 //hapus nasabah
-router.put("/:id_nasabah", authMiddleware, NasabahController.deleteNasabah);
+router.patch("/:id_nasabah", authMiddleware, NasabahController.deleteNasabah);
 
 //tampil saldo nasabah
 router.get(

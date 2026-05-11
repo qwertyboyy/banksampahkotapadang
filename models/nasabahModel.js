@@ -45,7 +45,7 @@ const NasabahModel = {
         saldo,
         status_aktif
       FROM nasabah
-      WHERE id_bank_sampah = ?
+      WHERE id_bank_sampah = ? AND status_aktif = 1
       ${searchQuery}
       ORDER BY nomor_rekening
       LIMIT ?
