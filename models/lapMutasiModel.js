@@ -95,6 +95,7 @@ export const insertMutasi = async ({
   jumlah,
   referensi_id,
   referensi_tabel,
+  admin_id,
 }) => {
   const [rows] = await conn.execute(
     `SELECT saldo FROM nasabah WHERE id_nasabah = ? FOR UPDATE`,
@@ -112,8 +113,8 @@ export const insertMutasi = async ({
 
   await conn.execute(
     `INSERT INTO mutasi_saldo
-    (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah, admin_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id_bank_sampah,
       id_nasabah,
@@ -123,6 +124,7 @@ export const insertMutasi = async ({
       nominal,
       saldo_sebelum,
       saldo_sesudah,
+      admin_id,
     ],
   );
 

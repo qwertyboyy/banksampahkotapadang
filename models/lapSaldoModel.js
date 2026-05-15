@@ -12,14 +12,17 @@ export const getSaldoNasabah = async ({
       n.nama_nasabah,
       n.nomor_rekening,
       n.saldo,
-      n.updated_at AS created_at
+      n.updated_at AS created_at,
+
+      DATEDIFF(CURDATE(), DATE(n.updated_at)) AS selisih_hari
+
     FROM nasabah n
     WHERE n.id_bank_sampah = ?
   `;
 
   const params = [id_bank_sampah];
 
-  // 🔥 FILTER KEYWORD
+  // FILTER KEYWORD
   if (keyword && keyword.trim() !== "") {
     query += `
       AND (
@@ -27,10 +30,11 @@ export const getSaldoNasabah = async ({
         OR n.nomor_rekening LIKE ?
       )
     `;
+
     params.push(`%${keyword}%`, `%${keyword}%`);
   }
 
-  // 🔥 FILTER TANGGAL (pakai updated_at)
+  // FILTER TANGGAL
   if (start_date && end_date) {
     query += ` AND DATE(n.updated_at) BETWEEN ? AND ?`;
     params.push(start_date, end_date);
@@ -42,8 +46,10 @@ export const getSaldoNasabah = async ({
     params.push(end_date);
   }
 
-  query += ` ORDER BY n.nama_nasabah ASC`;
+  // 🔥 URUT NOMOR REKENING
+  query += ` ORDER BY CAST(n.nomor_rekening AS UNSIGNED) ASC`;
 
   const [rows] = await db.execute(query, params);
+
   return rows;
 };

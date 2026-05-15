@@ -239,6 +239,22 @@ const NasabahModel = {
 
     return rows[0];
   },
+
+  // ================= LAST SETORAN =================
+  getLastSetoranNasabah: async (id_nasabah) => {
+    const [rows] = await db.query(
+      `
+    SELECT tanggal_setor
+    FROM transaksi_setor
+    WHERE id_nasabah = ?
+    ORDER BY tanggal_setor DESC
+    LIMIT 1
+    `,
+      [id_nasabah],
+    );
+
+    return rows[0] || null;
+  },
 };
 
 export default NasabahModel;

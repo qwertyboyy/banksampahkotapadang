@@ -8,6 +8,7 @@ export const setorSampah = async (req, res) => {
   try {
     const { id_nasabah, items } = req.body;
     const id_bank_sampah = req.user.id_bank_sampah;
+    const admin_id = req.user.id_user; // Assuming you have admin_id in the user object
 
     // 🔥 Validasi
     if (!id_nasabah || !items?.length) {
@@ -18,6 +19,7 @@ export const setorSampah = async (req, res) => {
       id_bank_sampah,
       id_nasabah,
       items,
+      admin_id,
     });
     console.log("USER:", req.user);
     res.status(201).json(result);

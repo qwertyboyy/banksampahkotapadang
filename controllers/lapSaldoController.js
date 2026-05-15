@@ -84,6 +84,18 @@ export const exportSaldoExcel = async (req, res) => {
   }
 };
 
+const capitalizeEachWord = (text) => {
+  if (!text) return "-";
+
+  return text
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+};
+
 export const exportSaldoPDF = async (req, res) => {
   try {
     const id_bank_sampah = req.user.id_bank_sampah;
@@ -254,7 +266,7 @@ export const exportSaldoPDF = async (req, res) => {
         width: COL_W.saldo - 4,
         align: "right",
       });
-      doc.text("Tgl. Update", COL_X.tanggal + 4, yPos + 8);
+      doc.text("Tgl. Terakhir Menabung", COL_X.tanggal + 4, yPos + 8);
 
       drawTableBorder(yPos, HEADER_H);
       yPos += HEADER_H;
@@ -273,15 +285,33 @@ export const exportSaldoPDF = async (req, res) => {
         drawHeader();
       }
 
-      const isEven = index % 2 === 0;
-
-      fillRect(
-        MARGIN,
-        yPos,
-        TABLE_W,
-        ROW_H,
-        isEven ? COLOR.rowOdd : COLOR.rowAlt,
+      const hari = Math.floor(
+        (new Date() - new Date(row.created_at)) / (1000 * 60 * 60 * 24),
       );
+
+      let rowColor = "#ffffff";
+
+      // 1 - 8 hari → hijau
+      if (hari >= 1 && hari <= 8) {
+        rowColor = "#d4edda";
+      }
+
+      // 9 - 16 hari → kuning
+      else if (hari >= 9 && hari <= 16) {
+        rowColor = "#fff3cd";
+      }
+
+      // 17 - 31 hari → orange
+      else if (hari >= 17 && hari <= 31) {
+        rowColor = "#ffe5b4";
+      }
+
+      // > 31 hari → merah
+      else if (hari > 31) {
+        rowColor = "#f8d7da";
+      }
+
+      fillRect(MARGIN, yPos, TABLE_W, ROW_H, rowColor);
 
       doc.font("Helvetica").fontSize(9).fillColor(COLOR.dark);
 
@@ -290,11 +320,10 @@ export const exportSaldoPDF = async (req, res) => {
         align: "center",
       });
 
-      doc.text(row.nama_nasabah || "-", COL_X.nama + 4, yPos + 6, {
+      doc.text(capitalizeEachWord(row.nama_nasabah), COL_X.nama + 4, yPos + 6, {
         width: COL_W.nama - 8,
         ellipsis: true,
       });
-
       doc.font("Courier");
       doc.text(row.nomor_rekening || "-", COL_X.rekening + 4, yPos + 6);
       doc.font("Helvetica");

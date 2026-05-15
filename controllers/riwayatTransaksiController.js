@@ -21,6 +21,7 @@ const Controller = {
       const { referensi_transaksi, detail_koreksi, id_nasabah } = req.body;
 
       const id_bank_sampah = req.user.id_bank_sampah; // 🔥 AMAN
+      const admin_id = req.user.id_user; // 🔥 AMAN
 
       const root = await RiwayatModel.getRoot(referensi_transaksi);
 
@@ -82,6 +83,7 @@ const Controller = {
         jumlah: total_nilai, // DELTA
         referensi_id: idBaru,
         referensi_tabel: "transaksi_setor",
+        admin_id,
       });
 
       await conn.commit();

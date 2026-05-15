@@ -7,7 +7,8 @@ export const createTarik = async (data) => {
   try {
     await conn.beginTransaction();
 
-    const { id_bank_sampah, id_nasabah, jumlah_tarik, keterangan } = data;
+    const { id_bank_sampah, id_nasabah, jumlah_tarik, keterangan, admin_id } =
+      data;
 
     // 🔥 1. Lock saldo nasabah
     const [rows] = await conn.query(
@@ -53,8 +54,8 @@ export const createTarik = async (data) => {
     // 🔥 3. Insert mutasi
     await conn.query(
       `INSERT INTO mutasi_saldo 
-      (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah)
-      VALUES (?, ?, 'TARIK', ?, 'transaksi_tarik', ?, ?, ?)`,
+      (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah, admin_id)
+      VALUES (?, ?, 'TARIK', ?, 'transaksi_tarik', ?, ?, ?, ?)`,
       [
         id_bank_sampah,
         id_nasabah,
@@ -62,6 +63,7 @@ export const createTarik = async (data) => {
         jumlah_tarik,
         saldoSebelum,
         saldoSesudah,
+        admin_id,
       ],
     );
 

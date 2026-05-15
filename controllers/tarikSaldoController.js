@@ -9,6 +9,7 @@ export const tarikSaldo = async (req, res) => {
 
     const { id_nasabah, jumlah_tarik, keterangan } = req.body;
     const id_bank_sampah = req.user.id_bank_sampah;
+    const admin_id = req.user.id_user;
 
     // 🔥 VALIDASI INPUT
     if (!id_nasabah || !jumlah_tarik) {
@@ -28,6 +29,7 @@ export const tarikSaldo = async (req, res) => {
       id_nasabah,
       jumlah_tarik: parseFloat(jumlah_tarik),
       keterangan,
+      admin_id,
     });
 
     res.status(201).json(result);

@@ -7,7 +7,7 @@ export const createSetor = async (data) => {
   try {
     await conn.beginTransaction();
 
-    const { id_bank_sampah, id_nasabah, items } = data;
+    const { id_bank_sampah, id_nasabah, items, admin_id } = data;
 
     // 🔥 1. Hitung total dari backend
     let totalBerat = 0;
@@ -63,8 +63,8 @@ export const createSetor = async (data) => {
     // 🔥 5. Insert mutasi
     await conn.query(
       `INSERT INTO mutasi_saldo 
-      (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah)
-      VALUES (?, ?, 'SETOR', ?, 'transaksi_setor', ?, ?, ?)`,
+      (id_bank_sampah, id_nasabah, tipe, referensi_id, referensi_tabel, jumlah, saldo_sebelum, saldo_sesudah, admin_id )
+      VALUES (?, ?, 'SETOR', ?, 'transaksi_setor', ?, ?, ?, ?)`,
       [
         id_bank_sampah,
         id_nasabah,
@@ -72,6 +72,7 @@ export const createSetor = async (data) => {
         totalNilai,
         saldoSebelum,
         saldoSesudah,
+        admin_id, // Make sure to include the admin_id if it's available
       ],
     );
 
