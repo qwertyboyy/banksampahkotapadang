@@ -81,8 +81,6 @@ const NasabahController = {
       await conn.beginTransaction();
 
       const id_bank_sampah = req.user.id_bank_sampah;
-      console.log("ID BANK:", id_bank_sampah, typeof id_bank_sampah);
-      console.log("REQ USER CREATE:", req.user);
       const { nama_nasabah, nik, alamat, no_hp } = req.body;
 
       const rekening = await NasabahModel.generateNomorRekening(

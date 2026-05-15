@@ -21,7 +21,6 @@ export const setorSampah = async (req, res) => {
       items,
       admin_id,
     });
-    console.log("USER:", req.user);
     res.status(201).json(result);
   } catch (error) {
     console.error(error);

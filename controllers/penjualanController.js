@@ -5,9 +5,6 @@ export const createTransaksiJual = async (req, res) => {
   const conn = await db.getConnection();
 
   try {
-    console.log("BODY:", req.body);
-    console.log("USER:", req.user);
-
     let { id_pengepul, tanggal, catatan, items } = req.body;
     const id_bank_sampah = req.user.id_bank_sampah;
 
@@ -61,11 +58,8 @@ export const createTransaksiJual = async (req, res) => {
       };
     });
 
-    console.log("DETAIL DATA:", detailData);
-
     // ================= START TRANSACTION =================
     await conn.beginTransaction();
-    console.log("START TRANSACTION");
 
     // ================= INSERT HEADER =================
     const id_penjualan = await TransaksiModel.createTransaksi(
@@ -79,8 +73,6 @@ export const createTransaksiJual = async (req, res) => {
       conn,
     );
 
-    console.log("ID PENJUALAN:", id_penjualan);
-
     // ================= INSERT DETAIL =================
     await TransaksiModel.createDetail(
       detailData,
@@ -89,11 +81,7 @@ export const createTransaksiJual = async (req, res) => {
       conn,
     );
 
-    console.log("BEFORE COMMIT");
-
     await conn.commit();
-
-    console.log("COMMIT SUCCESS");
 
     res.status(201).json({
       message: "Transaksi berhasil",

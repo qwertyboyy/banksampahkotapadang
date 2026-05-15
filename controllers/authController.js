@@ -207,7 +207,6 @@ export const register = async (req, res) => {
         nomor_rekening: nomor_rekening_final, // 🔥 INI YANG LU BUTUH
       },
     });
-    console.log("REKENING FINAL:", rekening.nomor_rekening);
   } catch (err) {
     await conn.rollback();
     console.error("ERROR REGISTER:", err);

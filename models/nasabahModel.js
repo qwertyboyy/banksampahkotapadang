@@ -93,9 +93,6 @@ const NasabahModel = {
       [id_bank_sampah],
     );
 
-    console.log("ID BANK MASUK:", id_bank_sampah);
-    console.log("HASIL BANK:", bank);
-
     if (!bank.length) {
       throw new Error("Bank sampah tidak ditemukan");
     }

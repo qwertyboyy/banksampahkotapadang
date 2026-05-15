@@ -37,7 +37,5 @@ export const createDetail = async (
     d.subtotal,
   ]);
 
-  console.log("DETAIL VALUES:", values);
-
   await conn.query(query, [values]);
 };

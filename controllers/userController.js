@@ -31,7 +31,6 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "8h" },
     );
-    console.log("LOGIN VERSION V2 - IDENTIFIER ACTIVE");
     res.json({
       token,
       user: {
