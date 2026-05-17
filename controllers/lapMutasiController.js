@@ -7,7 +7,7 @@ import db from "../config/db.js";
 
 export const getMutasi = async (req, res) => {
   try {
-    const { start_date, end_date, keyword, last_id, limit } = req.query;
+    const { start_date, end_date, keyword, last_id, limit, tipe } = req.query;
 
     const id_bank_sampah = req.user?.id_bank_sampah;
 
@@ -30,9 +30,10 @@ export const getMutasi = async (req, res) => {
       keyword,
       last_id,
       limit,
+      tipe,
       no_limit: false,
     });
-
+    console.log(req.query);
     res.json({
       success: true,
       data: data || [],

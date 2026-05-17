@@ -285,14 +285,22 @@ export const exportSaldoPDF = async (req, res) => {
         drawHeader();
       }
 
-      const hari = Math.floor(
-        (new Date() - new Date(row.created_at)) / (1000 * 60 * 60 * 24),
-      );
+      const hari = row.selisih_hari;
 
       let rowColor = "#ffffff";
 
+      // belum pernah setor
+      if (hari === null) {
+        rowColor = "#e2e3e5";
+      }
+
+      // 0 hari → putih
+      else if (hari === 0) {
+        rowColor = "#ffffff";
+      }
+
       // 1 - 8 hari → hijau
-      if (hari >= 1 && hari <= 8) {
+      else if (hari >= 1 && hari <= 8) {
         rowColor = "#d4edda";
       }
 
@@ -344,9 +352,9 @@ export const exportSaldoPDF = async (req, res) => {
       doc.font("Helvetica").fillColor(COLOR.dark);
 
       doc.text(
-        row.created_at
-          ? new Date(row.created_at).toLocaleDateString("id-ID")
-          : "-",
+        row.terakhir_setor
+          ? new Date(row.terakhir_setor).toLocaleDateString("id-ID")
+          : "Belum Pernah",
         COL_X.tanggal + 4,
         yPos + 6,
       );

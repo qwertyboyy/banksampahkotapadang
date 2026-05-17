@@ -7,6 +7,7 @@ export const getMutasi = async ({
   keyword,
   last_id,
   limit,
+  tipe,
   no_limit = false,
 }) => {
   if (!id_bank_sampah) {
@@ -17,6 +18,7 @@ export const getMutasi = async ({
   const safeStart = start_date || null;
   const safeEnd = end_date || null;
   const safeKeyword = keyword?.trim() || null;
+  const safeTipe = tipe?.trim().toUpperCase() || null;
   const safeLastId = Number(last_id) || null;
 
   let query = `
@@ -40,13 +42,18 @@ export const getMutasi = async ({
 
   // ================= FILTER TANGGAL =================
   if (safeStart && safeEnd) {
-    query += ` AND m.created_at BETWEEN ? AND ?`;
+    query += `
+    AND m.created_at >= ?
+    AND m.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+  `;
     params.push(safeStart, safeEnd);
   } else if (safeStart) {
     query += ` AND m.created_at >= ?`;
     params.push(safeStart);
   } else if (safeEnd) {
-    query += ` AND m.created_at <= ?`;
+    query += `
+    AND m.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+  `;
     params.push(safeEnd);
   }
 
@@ -61,6 +68,12 @@ export const getMutasi = async ({
     params.push(`%${safeKeyword}%`, `%${safeKeyword}%`);
   }
 
+  // ================= FILTER TIPE =================
+  if (safeTipe) {
+    query += ` AND UPPER(m.tipe) = ?`;
+    params.push(safeTipe);
+  }
+
   // ================= CURSOR PAGINATION =================
   if (safeLastId) {
     query += ` AND m.id_mutasi < ?`;
@@ -68,7 +81,7 @@ export const getMutasi = async ({
   }
 
   // ================= ORDER (HARUS 1 KALI) =================
-  query += ` ORDER BY n.nomor_rekening ASC`;
+  query += ` ORDER BY m.id_mutasi DESC`;
 
   // ================= LIMIT (OPTIONAL) =================
   if (!no_limit) {
@@ -82,7 +95,7 @@ export const getMutasi = async ({
   // ================= DEBUG (optional, bisa hapus nanti) =================
   // console.log("QUERY:", query);
   // console.log("PARAMS:", params);
-
+  console.log("TIPE:", tipe);
   const [rows] = await db.execute(query, params);
   return rows;
 };

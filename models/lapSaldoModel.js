@@ -12,11 +12,22 @@ export const getSaldoNasabah = async ({
       n.nama_nasabah,
       n.nomor_rekening,
       n.saldo,
-      n.updated_at AS created_at,
 
-      DATEDIFF(CURDATE(), DATE(n.updated_at)) AS selisih_hari
+      MAX(ts.tanggal_setor) AS terakhir_setor,
+
+      CASE
+        WHEN MAX(ts.tanggal_setor) IS NULL THEN NULL
+        ELSE DATEDIFF(
+          CURDATE(),
+          DATE(MAX(ts.tanggal_setor))
+        )
+      END AS selisih_hari
 
     FROM nasabah n
+
+    LEFT JOIN transaksi_setor ts 
+      ON ts.id_nasabah = n.id_nasabah
+
     WHERE n.id_bank_sampah = ?
   `;
 
@@ -34,20 +45,33 @@ export const getSaldoNasabah = async ({
     params.push(`%${keyword}%`, `%${keyword}%`);
   }
 
-  // FILTER TANGGAL
+  // FILTER TANGGAL SETOR
   if (start_date && end_date) {
-    query += ` AND DATE(n.updated_at) BETWEEN ? AND ?`;
+    query += `
+      AND DATE(ts.tanggal_setor) BETWEEN ? AND ?
+    `;
     params.push(start_date, end_date);
   } else if (start_date) {
-    query += ` AND DATE(n.updated_at) >= ?`;
+    query += `
+      AND DATE(ts.tanggal_setor) >= ?
+    `;
     params.push(start_date);
   } else if (end_date) {
-    query += ` AND DATE(n.updated_at) <= ?`;
+    query += `
+      AND DATE(ts.tanggal_setor) <= ?
+    `;
     params.push(end_date);
   }
 
-  // 🔥 URUT NOMOR REKENING
-  query += ` ORDER BY CAST(n.nomor_rekening AS UNSIGNED) ASC`;
+  query += `
+    GROUP BY 
+      n.id_nasabah,
+      n.nama_nasabah,
+      n.nomor_rekening,
+      n.saldo
+
+    ORDER BY CAST(n.nomor_rekening AS UNSIGNED) ASC
+  `;
 
   const [rows] = await db.execute(query, params);
 
