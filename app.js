@@ -27,6 +27,7 @@ import lapSaldoRoutes from "./routes/lapSaldoRoutes.js";
 import lapPenjualanRoutes from "./routes/lapPenjualanRoute.js";
 import lapKinerjaRoutes from "./routes/lapKinerjaRoutes.js";
 import notifikasiRoutes from "./routes/notifikasiRoutes.js";
+import resetPasswordRoutes from "./routes/resetPasswordRoutes.js";
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use("/api/riwayat", riwayatTransaksi);
 app.use("/api/lap-penjualan", lapPenjualanRoutes);
 app.use("/api/lap-kinerja", lapKinerjaRoutes);
 app.use("/api/notifikasi", notifikasiRoutes);
+app.use("/api", resetPasswordRoutes);
 /**
  * HEALTH CHECK
  */

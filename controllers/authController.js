@@ -362,8 +362,14 @@ export const registerFinal = async (req, res) => {
 
       const [result] = await conn.query(
         `INSERT INTO nasabah 
-   (id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, saldo) 
-   VALUES (?, ?, ?, ?, 0)`,
+     (
+       id_bank_sampah,
+       nomor_urut,
+       nomor_rekening,
+       nama_nasabah,
+       saldo
+     ) 
+     VALUES (?, ?, ?, ?, 0)`,
         [
           id_bank_sampah,
           rekening.nomor_urut,
@@ -372,7 +378,9 @@ export const registerFinal = async (req, res) => {
         ],
       );
 
-      // 🔥 JANGAN LUPA INI (sering dilupakan)
+      // 🔥 INI YANG HILANG
+      id_nasabah = result.insertId;
+
       await NasabahModel.updateCounterNasabah(
         conn,
         id_bank_sampah,
@@ -527,8 +535,8 @@ export const sendOtp = async (req, res) => {
     const expired = new Date(Date.now() + 5 * 60 * 1000);
 
     await pool.query(
-      `INSERT INTO verification_tokens (email, token, expired_at)
-       VALUES (?, ?, ?)`,
+      `INSERT INTO verification_tokens (email, token, purpose, expired_at)
+       VALUES (?, ?, 'register', ?)`,
       [email, token, expired],
     );
 

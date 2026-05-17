@@ -206,7 +206,7 @@ export const deleteUser = async (id_user) => {
 
 export const activateUser = async (id_user) => {
   const [result] = await pool.query(
-    `UPDATE users SET status_aktif = 1 WHERE id_user = ?`,
+    `UPDATE users SET status_aktif = 1, status_akun = 'aktif' WHERE id_user = ?`,
     [id_user],
   );
 
@@ -215,7 +215,7 @@ export const activateUser = async (id_user) => {
 
 export const unActivateUser = async (id_user) => {
   const [result] = await pool.query(
-    `UPDATE users SET status_aktif = 0 WHERE id_user = ?`,
+    `UPDATE users SET status_aktif = 0, status_akun = 'ditolak' WHERE id_user = ?`,
     [id_user],
   );
 
