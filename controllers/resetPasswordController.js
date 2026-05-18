@@ -22,6 +22,7 @@ export const requestResetPassword = async (req, res) => {
   try {
     console.log("FUNCTION MASUK");
     const { email } = req.body;
+    console.log("EMAIL:", email);
 
     if (!email) {
       return res.status(400).json({
@@ -31,6 +32,7 @@ export const requestResetPassword = async (req, res) => {
     }
 
     const user = await findUserByEmail(email);
+    console.log("USER:", user);
 
     // response generic
     if (!user) {
@@ -39,10 +41,11 @@ export const requestResetPassword = async (req, res) => {
         message: "Jika email terdaftar, OTP akan dikirim",
       });
     }
-    console.log("USER:", user);
-    console.log("STATUS AKTIF:", user?.status_aktif);
-    console.log("STATUS AKUN:", user?.status_akun);
-    console.log("EMAIL VERIFIED:", user?.email_verified_at);
+    console.log("STATUS AKTIF:", user.status_aktif);
+    console.log("STATUS AKUN:", user.status_akun);
+    console.log("EMAIL VERIFIED:", user.email_verified_at);
+
+    console.log("SEBELUM SAVE TOKEN");
 
     // cek akun aktif
     if (!user.status_aktif) {
