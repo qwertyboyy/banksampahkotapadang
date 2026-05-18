@@ -38,6 +38,10 @@ export const requestResetPassword = async (req, res) => {
         message: "Jika email terdaftar, OTP akan dikirim",
       });
     }
+    console.log("USER:", user);
+    console.log("STATUS AKTIF:", user?.status_aktif);
+    console.log("STATUS AKUN:", user?.status_akun);
+    console.log("EMAIL VERIFIED:", user?.email_verified_at);
 
     // cek akun aktif
     if (!user.status_aktif) {
