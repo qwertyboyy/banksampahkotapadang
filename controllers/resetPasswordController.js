@@ -70,6 +70,7 @@ export const requestResetPassword = async (req, res) => {
 
     // hapus token lama
     await deleteOldResetToken(email);
+    console.log("SEBELUM SAVE TOKEN");
 
     // simpan token baru
     await saveResetToken({
@@ -77,6 +78,7 @@ export const requestResetPassword = async (req, res) => {
       token,
       expired_at,
     });
+    console.log("SETELAH SAVE TOKEN");
 
     // TODO:
     // kirim OTP ke email user
@@ -185,6 +187,10 @@ export const requestResetPassword = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    console.error("RESET PASSWORD ERROR:");
+    console.error(error.message);
+    console.error(error.sqlMessage);
+    console.error(error.sql);
 
     return res.status(500).json({
       success: false,
