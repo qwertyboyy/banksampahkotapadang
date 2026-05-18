@@ -20,6 +20,7 @@ console.log("RESET CONTROLLER LOADED");
 
 export const requestResetPassword = async (req, res) => {
   try {
+    console.log("FUNCTION MASUK");
     const { email } = req.body;
 
     if (!email) {
