@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import config from "./config/env.js";
+import multer from "multer";
 
 const env = process.env.NODE_ENV || "development";
 
@@ -28,6 +29,8 @@ import lapPenjualanRoutes from "./routes/lapPenjualanRoute.js";
 import lapKinerjaRoutes from "./routes/lapKinerjaRoutes.js";
 import notifikasiRoutes from "./routes/notifikasiRoutes.js";
 import resetPasswordRoutes from "./routes/resetPasswordRoutes.js";
+import settingAkunRoutes from "./routes/settingAkunRoutes.js";
+import transferRoutes from "./routes/transferRoutes.js";
 
 const app = express();
 
@@ -59,6 +62,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 /**
  * ✅ ROUTES
@@ -81,10 +85,29 @@ app.use("/api/lap-penjualan", lapPenjualanRoutes);
 app.use("/api/lap-kinerja", lapKinerjaRoutes);
 app.use("/api/notifikasi", notifikasiRoutes);
 app.use("/api", resetPasswordRoutes);
+app.use("/api/account", settingAkunRoutes);
+app.use("/api/", transferRoutes);
 /**
  * HEALTH CHECK
  */
 app.get("/", (req, res) => res.send("API Bank Sampah Running"));
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "Ukuran file maksimal 2MB",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  next(err);
+});
 
 /**
  * START SERVER

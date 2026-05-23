@@ -223,15 +223,37 @@ class DashboardModel {
   static async getRiwayatNasabah(id_nasabah, limit = 10) {
     const [rows] = await db.query(
       `SELECT 
-      tipe,
-      jumlah,
-      saldo_sesudah,
-      created_at
-     FROM mutasi_saldo
-     WHERE id_nasabah = ?
-     ORDER BY id_mutasi DESC
+      ms.id_mutasi,
+      ms.tipe,
+      ms.jumlah,
+      ms.saldo_sesudah,
+      ms.created_at,
+
+      GROUP_CONCAT(
+        DISTINCT jsb.nama_jenis
+        SEPARATOR ', '
+      ) AS jenis_sampah
+
+     FROM mutasi_saldo ms
+
+     LEFT JOIN transaksi_setor ts
+       ON ts.id_transaksi_setor = ms.referensi_id
+       AND ms.referensi_tabel = 'transaksi_setor'
+
+     LEFT JOIN detail_setor ds
+       ON ds.id_transaksi_setor = ts.id_transaksi_setor
+
+     LEFT JOIN jenis_sampah_bank jsb
+       ON jsb.id_jenis_sampah = ds.id_jenis_sampah
+
+     WHERE ms.id_nasabah = ?
+
+     GROUP BY ms.id_mutasi
+
+     ORDER BY ms.id_mutasi DESC
+
      LIMIT ?`,
-      [id_nasabah, limit],
+      [id_nasabah, Number(limit)],
     );
 
     return rows;

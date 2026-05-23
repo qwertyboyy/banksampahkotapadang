@@ -10,6 +10,7 @@ import {
 } from "../controllers/bankSampahController.js";
 
 import upload from "../middlewares/upload.js";
+const uploadLogo = upload("logo");
 
 const router = express.Router();
 
@@ -19,5 +20,5 @@ router.put("/:id", updateBankSampah);
 router.delete("/:id", deleteBankSampah);
 router.get("/generate-kode/:id_kecamatan", generateKodeBankSampah);
 router.get("/setting/:id", getSettingBankSampah);
-router.put("/setting/:id", upload.single("logo"), updateSettingBankSampah);
+router.put("/setting/:id", uploadLogo.single("logo"), updateSettingBankSampah);
 export default router;

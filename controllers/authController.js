@@ -71,6 +71,7 @@ export const login = async (req, res) => {
         id_bank_sampah: user.id_bank_sampah,
         nama_bank_sampah: user.nama_bank_sampah,
         id_nasabah: user.id_nasabah,
+        foto_profil: user.foto_profil,
       },
     });
   } catch (err) {

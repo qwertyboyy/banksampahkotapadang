@@ -14,7 +14,8 @@ export const loginUser = async (identifier) => {
         b.nama_bank_sampah,
         u.id_nasabah,
         u.status_aktif,
-        u.status_akun
+        u.status_akun,
+        u.foto_profil
      FROM users u
      LEFT JOIN bank_sampah b 
      ON u.id_bank_sampah = b.id_bank_sampah
