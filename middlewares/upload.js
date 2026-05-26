@@ -44,22 +44,17 @@ const createUploader = (folder) => {
       }
 
       const filename =
-        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".webp";
+        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".png";
 
       const filepath = path.join(uploadPath, filename);
 
       await sharp(req.file.buffer)
         .rotate()
-
         .resize({
           width: 800,
           withoutEnlargement: true,
         })
-
-        .webp({
-          quality: 70,
-        })
-
+        .png()
         .toFile(filepath);
 
       req.file.filename = filename;

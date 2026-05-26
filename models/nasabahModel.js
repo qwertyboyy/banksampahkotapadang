@@ -40,6 +40,7 @@ const NasabahModel = {
         id_nasabah,
         nomor_rekening,
         nama_nasabah,
+        nik,
         alamat,
         no_hp,
         saldo,
@@ -166,8 +167,7 @@ const NasabahModel = {
         nama_nasabah = ?,
         nik = ?,
         alamat = ?,
-        no_hp = ?,
-        status_aktif = ?
+        no_hp = ?
       WHERE id_nasabah = ?
     `;
 
@@ -176,7 +176,6 @@ const NasabahModel = {
       data.nik,
       data.alamat,
       data.no_hp,
-      data.status_aktif,
       id_nasabah,
     ]);
   },

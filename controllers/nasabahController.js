@@ -171,14 +171,13 @@ const NasabahController = {
   updateNasabah: async (req, res) => {
     try {
       const { id_nasabah } = req.params;
-      const { nama_nasabah, nik, alamat, no_hp, status_aktif } = req.body;
+      const { nama_nasabah, nik, alamat, no_hp } = req.body;
 
       await NasabahModel.updateNasabah(id_nasabah, {
         nama_nasabah,
         nik,
         alamat,
         no_hp,
-        status_aktif,
       });
 
       res.json({
