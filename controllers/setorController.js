@@ -2,9 +2,6 @@
 import { createSetor } from "../models/setorModel.js";
 
 export const setorSampah = async (req, res) => {
-  console.log("=== DEBUG SETOR ===");
-  console.log("HEADERS:", req.headers.authorization);
-  console.log("USER:", req.user);
   try {
     const { id_nasabah, items } = req.body;
     const id_bank_sampah = req.user.id_bank_sampah;
