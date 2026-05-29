@@ -167,7 +167,8 @@ const NasabahModel = {
         nama_nasabah = ?,
         nik = ?,
         alamat = ?,
-        no_hp = ?
+        no_hp = ?,
+        status_aktif = 1
       WHERE id_nasabah = ?
     `;
 
@@ -225,7 +226,7 @@ const NasabahModel = {
     const [rows] = await db.query(
       `SELECT saldo 
        FROM nasabah 
-       WHERE id_nasabah = ? AND id_bank_sampah = ?`,
+       WHERE id_nasabah = ? AND id_bank_sampah = ? AND status_aktif = 1`,
       [id_nasabah, id_bank_sampah],
     );
 

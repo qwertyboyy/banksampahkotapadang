@@ -171,6 +171,14 @@ const NasabahController = {
   updateNasabah: async (req, res) => {
     try {
       const { id_nasabah } = req.params;
+
+      if (!id_nasabah) {
+        return res.status(400).json({
+          success: false,
+          message: "id_nasabah wajib diisi",
+        });
+      }
+
       const { nama_nasabah, nik, alamat, no_hp } = req.body;
 
       await NasabahModel.updateNasabah(id_nasabah, {
@@ -186,7 +194,11 @@ const NasabahController = {
       });
     } catch (error) {
       console.error("ERROR updateNasabah:", error);
-      res.status(500).json({ success: false, message: error.message });
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   },
 
