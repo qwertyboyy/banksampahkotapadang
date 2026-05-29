@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import config from "./config/env.js";
 import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const env = process.env.NODE_ENV || "development";
 
@@ -45,6 +47,8 @@ const allowedOrigins = [
   "http://localhost:5173",
 ];
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: function (origin, callback) {
