@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import db from "../config/db.js";
 
 class TransferModel {
@@ -28,6 +29,56 @@ class TransferModel {
     );
 
     return rows[0];
+  }
+
+  static async getTransferPinHash(id_user) {
+    const [rows] = await db.query(
+      `SELECT pin_transaksi_hash
+       FROM users
+       WHERE id_user = ?
+       LIMIT 1`,
+      [id_user],
+    );
+
+    return rows[0]?.pin_transaksi_hash || null;
+  }
+
+  static async hasTransferPin(id_user) {
+    const hash = await this.getTransferPinHash(id_user);
+    return Boolean(hash);
+  }
+
+  static async setTransferPin(id_user, pin) {
+    const pin_transaksi_hash = await bcrypt.hash(pin, 10);
+
+    await db.query(
+      `UPDATE users
+       SET pin_transaksi_hash = ?
+       WHERE id_user = ?`,
+      [pin_transaksi_hash, id_user],
+    );
+
+    return true;
+  }
+
+  static async verifyTransferPin(id_user, pin) {
+    const pin_transaksi_hash = await this.getTransferPinHash(id_user);
+
+    if (!pin_transaksi_hash) {
+      const error = new Error("PIN transaksi belum dibuat");
+      error.status = 403;
+      throw error;
+    }
+
+    const isValid = await bcrypt.compare(pin, pin_transaksi_hash);
+
+    if (!isValid) {
+      const error = new Error("PIN transaksi salah");
+      error.status = 401;
+      throw error;
+    }
+
+    return true;
   }
 
   static async transferSaldo({ pengirim, penerima, nominal, id_bank_sampah }) {

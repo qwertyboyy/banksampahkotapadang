@@ -44,17 +44,21 @@ const createUploader = (folder) => {
       }
 
       const filename =
-        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".png";
+        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".jpg";
 
       const filepath = path.join(uploadPath, filename);
 
       await sharp(req.file.buffer)
         .rotate()
         .resize({
-          width: 800,
-          withoutEnlargement: true,
+          width: 500,
+          height: 500,
+          fit: "cover",
+          position: "centre",
         })
-        .png()
+        .jpeg({
+          quality: 85,
+        })
         .toFile(filepath);
 
       req.file.filename = filename;

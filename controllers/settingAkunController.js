@@ -52,11 +52,13 @@ export const updateProfile = async (req, res) => {
 
     await AccountModel.updateProfile(id_user, username, foto_profil);
 
+    const user = await AccountModel.getMe(id_user);
+
     res.json({
       success: true,
       message: "Profil berhasil diperbarui",
+      data: user,
     });
-    window.dispatchEvent(new Event("profile-updated"));
   } catch (err) {
     console.error(err);
 
