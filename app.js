@@ -45,6 +45,7 @@ const allowedOrigins = [
   "https://api.banksampah.dlh.padang.go.id",
   "https://banksampah.dlh.padang.go.id", // frontend production
   "http://localhost:5173",
+  "http://localhost:8081",
 ];
 
 const __filename = fileURLToPath(import.meta.url);

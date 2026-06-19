@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # ========================
 # DEPENDENCIES
 # ========================
@@ -22,7 +22,7 @@ uploads/
 # ========================
 logs/
 =======
-<<<<<<< HEAD
+
 node_modules/
 .env
 .env.development
@@ -31,12 +31,12 @@ node_modules/
 =======
 # Logs
 logs
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
+
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-<<<<<<< HEAD
+
 
 # ========================
 # SYSTEM FILES
@@ -184,5 +184,4 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
->>>>>>> 404bc13c4b54ba54a930fc13e05bdab95c945c35
->>>>>>> f6dc75d6e632daac388cecfe06da2495908b1a07
+

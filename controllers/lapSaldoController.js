@@ -139,7 +139,7 @@ export const exportSaldoPDF = async (req, res) => {
     const COL_W = {
       no: 30,
       nama: 155,
-      rekening: 110,
+      // rekening: 110,
       saldo: 110,
       tanggal: 100,
     };
@@ -147,9 +147,8 @@ export const exportSaldoPDF = async (req, res) => {
     const COL_X = {
       no: MARGIN,
       nama: MARGIN + COL_W.no,
-      rekening: MARGIN + COL_W.no + COL_W.nama,
-      saldo: MARGIN + COL_W.no + COL_W.nama + COL_W.rekening,
-      tanggal: MARGIN + COL_W.no + COL_W.nama + COL_W.rekening + COL_W.saldo,
+      saldo: MARGIN + COL_W.no + COL_W.nama,
+      tanggal: MARGIN + COL_W.no + COL_W.nama + COL_W.saldo,
     };
 
     const ROW_H = 22;
@@ -165,7 +164,11 @@ export const exportSaldoPDF = async (req, res) => {
       doc.save().strokeColor(COLOR.border).lineWidth(0.5);
       doc.rect(MARGIN, y, TABLE_W, h).stroke();
 
-      [COL_X.nama, COL_X.rekening, COL_X.saldo, COL_X.tanggal].forEach((x) => {
+      [
+        COL_X.nama, // COL_X.rekening,
+        COL_X.saldo,
+        COL_X.tanggal,
+      ].forEach((x) => {
         doc
           .moveTo(x, y)
           .lineTo(x, y + h)
@@ -261,7 +264,7 @@ export const exportSaldoPDF = async (req, res) => {
 
       doc.text("No", COL_X.no, yPos + 8, { width: COL_W.no, align: "center" });
       doc.text("Nama Nasabah", COL_X.nama + 4, yPos + 8);
-      doc.text("No. Rekening", COL_X.rekening + 4, yPos + 8);
+      // doc.text("No. Rekening", COL_X.rekening + 4, yPos + 8);
       doc.text("Saldo", COL_X.saldo, yPos + 8, {
         width: COL_W.saldo - 4,
         align: "right",
@@ -332,8 +335,8 @@ export const exportSaldoPDF = async (req, res) => {
         width: COL_W.nama - 8,
         ellipsis: true,
       });
-      doc.font("Courier");
-      doc.text(row.nomor_rekening || "-", COL_X.rekening + 4, yPos + 6);
+      // doc.font("Courier");
+      // doc.text(row.nomor_rekening || "-", COL_X.rekening + 4, yPos + 6);
       doc.font("Helvetica");
 
       doc
@@ -383,7 +386,7 @@ export const exportSaldoPDF = async (req, res) => {
         .fontSize(9)
         .fillColor(COLOR.primary)
         .text(`Total (${data.length} nasabah)`, COL_X.no + 4, yPos + 6, {
-          width: COL_W.no + COL_W.nama + COL_W.rekening - 8,
+          width: COL_W.no + COL_W.nama - 8,
         });
 
       doc.text(
