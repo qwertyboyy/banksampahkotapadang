@@ -33,6 +33,7 @@ import notifikasiRoutes from "./routes/notifikasiRoutes.js";
 import resetPasswordRoutes from "./routes/resetPasswordRoutes.js";
 import settingAkunRoutes from "./routes/settingAkunRoutes.js";
 import transferRoutes from "./routes/transferRoutes.js";
+import mapsRoutes from "./routes/mapsRoutes.js";
 
 const app = express();
 
@@ -92,6 +93,7 @@ app.use("/api/notifikasi", notifikasiRoutes);
 app.use("/api", resetPasswordRoutes);
 app.use("/api/account", settingAkunRoutes);
 app.use("/api/", transferRoutes);
+app.use("/api/maps", mapsRoutes);
 /**
  * HEALTH CHECK
  */
