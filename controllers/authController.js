@@ -272,6 +272,14 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ message: "OTP tidak valid / expired" });
     }
 
+    await pool.query(
+      `UPDATE verification_tokens
+       SET verified = 1
+       WHERE email = ?
+       AND token = ?`,
+      [email, token],
+    );
+
     res.json({ message: "OTP valid" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -311,8 +319,12 @@ export const registerFinal = async (req, res) => {
 
     // 🔥 CEK OTP VALID
     const [otpCheck] = await conn.query(
-      `SELECT * FROM verification_tokens
-       WHERE email = ? AND expired_at > NOW()`,
+      `SELECT *
+   FROM verification_tokens
+   WHERE email = ?
+   AND purpose = 'register'
+   AND verified = 1
+   AND expired_at > NOW()`,
       [email],
     );
 
@@ -431,9 +443,12 @@ export const registerFinal = async (req, res) => {
     );
 
     // 🔥 HAPUS OTP (ANTI REUSE)
-    await conn.query(`DELETE FROM verification_tokens WHERE email = ?`, [
-      email,
-    ]);
+    await conn.query(
+      `DELETE FROM verification_tokens
+   WHERE email = ?
+   AND purpose = 'register'`,
+      [email],
+    );
 
     await conn.commit();
 
@@ -475,7 +490,7 @@ export const approveUser = async (req, res) => {
       });
     }
 
-    // 🔥 APPROVE
+    //buat approve
     await pool.query(
       `UPDATE users 
        SET status_akun = 'aktif', status_aktif = 1 
@@ -531,6 +546,24 @@ export const sendOtp = async (req, res) => {
     if (!email) {
       return res.status(400).json({ message: "Email wajib diisi" });
     }
+
+    const [user] = await pool.query(
+      `SELECT id_user FROM users WHERE email = ? LIMIT 1`,
+      [email],
+    );
+
+    if (user.length) {
+      return res.status(400).json({
+        message: "Email sudah digunakan",
+      });
+    }
+
+    await pool.query(
+      `DELETE FROM verification_tokens
+   WHERE email = ?
+   AND purpose='register'`,
+      [email],
+    );
 
     const token = crypto.randomInt(100000, 999999).toString();
     const expired = new Date(Date.now() + 5 * 60 * 1000);
