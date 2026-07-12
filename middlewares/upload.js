@@ -44,7 +44,7 @@ const createUploader = (folder) => {
       }
 
       const filename =
-        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".jpg";
+        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".png";
 
       const filepath = path.join(uploadPath, filename);
 
@@ -53,11 +53,18 @@ const createUploader = (folder) => {
         .resize({
           width: 500,
           height: 500,
-          fit: "cover",
+          fit: "contain",
           position: "centre",
+          background: {
+            r: 0,
+            g: 0,
+            b: 0,
+            alpha: 0,
+          },
+          withoutEnlargement: true,
         })
-        .jpeg({
-          quality: 85,
+        .png({
+          compressionLevel: 9,
         })
         .toFile(filepath);
 
@@ -67,7 +74,7 @@ const createUploader = (folder) => {
     } catch (err) {
       console.error(err);
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Gagal compress image",
       });

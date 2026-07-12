@@ -182,7 +182,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       year,
     );
 
-    const doc = new PDFDocument({ margin: 40 });
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -331,7 +331,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(14)
       .fillColor(COLOR.dark)
-      .text("LAPORAN KINERJA", MARGIN, yPos, {
+      .text("LAPORAN KINERJA OPERASIONAL BULANAN", MARGIN, yPos, {
         width: TABLE_W,
         align: "center",
       });
@@ -352,7 +352,8 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       doc.font("Helvetica-Bold").fontSize(9).fillColor(COLOR.headerText);
 
       doc.text("No", COL_X.no, yPos + 8, { width: COL_W.no, align: "center" });
-      doc.text("Bulan", COL_X.bulan + 4, yPos + 8);
+      (doc.text("Bulan", COL_X.bulan + 4, yPos + 8),
+        { width: COL_W.bulan, align: "center" });
 
       doc.text("Jumlah Transaksi", COL_X.transaksi, yPos + 8, {
         width: COL_W.transaksi,
@@ -361,7 +362,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
 
       doc.text("Penarikan", COL_X.tarik, yPos + 8, {
         width: COL_W.tarik,
-        align: "center",
+        align: "left",
       });
 
       doc.text("Berat Setor", COL_X.berat, yPos + 8, {
@@ -369,9 +370,9 @@ export const exportPdfLaporanKinerja = async (req, res) => {
         align: "center",
       });
 
-      doc.text("Setoran", COL_X.setor, yPos + 8, {
+      doc.text("Nilai Setoran", COL_X.setor, yPos + 8, {
         width: COL_W.setor,
-        align: "center",
+        align: "left",
       });
 
       drawBorder(yPos, HEADER_H);
@@ -495,6 +496,75 @@ export const exportPdfLaporanKinerja = async (req, res) => {
     });
 
     drawBorder(yPos, ROW_H);
+    drawBorder(yPos, ROW_H);
+
+    yPos += ROW_H;
+
+    // ================= TANDA TANGAN DIREKTUR =================
+    const SIGNATURE_BLOCK_H = 30 + 14 + 50 + 18; // jarak atas + label tempat/tgl + jarak ttd + garis
+
+    if (yPos + SIGNATURE_BLOCK_H > PAGE_BOTTOM) {
+      doc.addPage();
+      yPos = 50;
+    }
+
+    yPos += 30;
+
+    const ttdX = MARGIN + TABLE_W - 160;
+
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .fillColor(COLOR.dark)
+      .text(
+        ` Padang, ${new Date().toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })}`,
+        ttdX,
+        yPos,
+        { width: 155, align: "center" },
+      );
+
+    yPos += 14;
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor(COLOR.dark)
+      .text("Direktur Bank Sampah", ttdX, yPos, {
+        width: 155,
+        align: "center",
+      });
+
+    yPos += 50;
+
+    // Garis tanda tangan
+    doc
+      .save()
+      .moveTo(ttdX + 10, yPos)
+      .lineTo(ttdX + 145, yPos)
+      .lineWidth(1)
+      .strokeColor(COLOR.dark)
+      .stroke()
+      .restore();
+
+    yPos += 14;
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor(COLOR.dark)
+      .text(
+        `Bank Sampah ${bank?.nama_bank_sampah || "Bank Sampah"}`,
+        ttdX,
+        yPos,
+        {
+          width: 155,
+          align: "center",
+        },
+      );
 
     doc.end();
   } catch (err) {

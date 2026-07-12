@@ -33,7 +33,7 @@ export const getMutasi = async (req, res) => {
       tipe,
       no_limit: false,
     });
-    console.log(req.query);
+
     res.json({
       success: true,
       data: data || [],
@@ -138,9 +138,9 @@ export const exportPDF = async (req, res) => {
 
     const COL_W = {
       tanggal: 90,
-      rekening: 90,
-      nama: 120,
-      tipe: 60,
+      rekening: 65,
+      nama: 100,
+      tipe: 105,
       jumlah: 85,
       saldo: 85,
     };
@@ -205,14 +205,12 @@ export const exportPDF = async (req, res) => {
 
       doc.text("Tipe", COL_X.tipe + 4, yPos + 8);
 
-      doc.text("Jumlah", COL_X.jumlah, yPos + 8, {
-        width: COL_W.jumlah - 4,
-        align: "right",
+      doc.text("Jumlah", COL_X.jumlah + 4, yPos + 8, {
+        align: "left",
       });
 
-      doc.text("Saldo", COL_X.saldo, yPos + 8, {
-        width: COL_W.saldo - 4,
-        align: "right",
+      doc.text("Saldo", COL_X.saldo + 4, yPos + 8, {
+        align: "left",
       });
 
       drawBorder(yPos, HEADER_H);
@@ -238,13 +236,13 @@ export const exportPDF = async (req, res) => {
 
     doc
       .font("Helvetica-Bold")
-      .fontSize(13)
+      .fontSize(14)
       .fillColor(COLOR.primary)
       .text(bank?.nama_bank_sampah || "BANK SAMPAH", MARGIN + 70, yPos + 10);
 
     doc
       .font("Helvetica")
-      .fontSize(9)
+      .fontSize(12)
       .fillColor(COLOR.muted)
       .text(bank?.alamat || "-", MARGIN + 70, yPos + 28);
 
@@ -308,7 +306,7 @@ export const exportPDF = async (req, res) => {
 
     if (req.query.keyword) {
       filterItems.push({
-        label: "Pencarian",
+        label: "Nama / No Rekening",
         value: req.query.keyword,
       });
     }
@@ -413,15 +411,23 @@ export const exportPDF = async (req, res) => {
 
       doc.text(row.tipe || "-", COL_X.tipe + 4, yPos + 6);
 
-      doc.text("Rp " + jumlah.toLocaleString("id-ID"), COL_X.jumlah, yPos + 6, {
-        width: COL_W.jumlah - 4,
-        align: "right",
-      });
+      doc.text(
+        "Rp " + jumlah.toLocaleString("id-ID"),
+        COL_X.jumlah + 4,
+        yPos + 6,
+        {
+          align: "left",
+        },
+      );
 
-      doc.text("Rp " + saldo.toLocaleString("id-ID"), COL_X.saldo, yPos + 6, {
-        width: COL_W.saldo - 4,
-        align: "right",
-      });
+      doc.text(
+        "Rp " + saldo.toLocaleString("id-ID"),
+        COL_X.saldo + 4,
+        yPos + 6,
+        {
+          align: "left",
+        },
+      );
 
       drawBorder(yPos, ROW_H);
 

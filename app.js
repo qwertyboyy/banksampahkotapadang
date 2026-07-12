@@ -34,6 +34,8 @@ import resetPasswordRoutes from "./routes/resetPasswordRoutes.js";
 import settingAkunRoutes from "./routes/settingAkunRoutes.js";
 import transferRoutes from "./routes/transferRoutes.js";
 import mapsRoutes from "./routes/mapsRoutes.js";
+import lapKeuanganRoutes from "./routes/lapKeuanganRoutes.js";
+import pengeluaranRoutes from "./routes/pengeluaranRoutes.js";
 
 const app = express();
 
@@ -94,6 +96,8 @@ app.use("/api", resetPasswordRoutes);
 app.use("/api/account", settingAkunRoutes);
 app.use("/api/", transferRoutes);
 app.use("/api/maps", mapsRoutes);
+app.use("/api/laporan-keuangan", lapKeuanganRoutes);
+app.use("/api/pengeluaran", pengeluaranRoutes);
 /**
  * HEALTH CHECK
  */

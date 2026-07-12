@@ -127,7 +127,7 @@ export const exportPdfPenjualan = async (req, res) => {
       });
     });
 
-    const doc = new PDFDocument({ margin: 40 });
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -155,8 +155,10 @@ export const exportPdfPenjualan = async (req, res) => {
     };
 
     const PAGE_W = 595;
+    const PAGE_H = 842; // A4
     const MARGIN = 45;
     const TABLE_W = PAGE_W - MARGIN * 2; // 505
+    const BOTTOM_LIMIT = PAGE_H - MARGIN; // batas aman bawah halaman (≈ 797)
 
     // Lebar kolom (total = TABLE_W = 505)
     const COL_W = {
@@ -214,6 +216,55 @@ export const exportPdfPenjualan = async (req, res) => {
           .stroke();
       });
       doc.restore();
+    };
+
+    // ─────────────────────────────────────────
+    //  HEADER TABEL (dideklarasikan dulu agar bisa dipanggil ensureSpace)
+    // ─────────────────────────────────────────
+    const drawHeader = () => {
+      fillRect(MARGIN, yPos, TABLE_W, HEADER_H, COLOR.headerBg);
+
+      doc.font("Helvetica-Bold").fontSize(9).fillColor(COLOR.headerText);
+
+      doc.text("No", COL_X.no, yPos + 8, { width: COL_W.no, align: "center" });
+      doc.text("Tanggal", COL_X.tanggal + 4, yPos + 8, {
+        width: COL_W.tanggal - 4,
+        align: "left",
+      });
+      doc.text("Pengepul", COL_X.pengepul + 4, yPos + 8, {
+        width: COL_W.pengepul - 4,
+        align: "left",
+      });
+      doc.text("Barang", COL_X.barang + 4, yPos + 8, {
+        width: COL_W.barang - 4,
+        align: "left",
+      });
+      doc.text("Berat", COL_X.berat, yPos + 8, {
+        width: COL_W.berat - 4,
+        align: "right",
+      });
+      doc.text("Subtotal", COL_X.subtotal, yPos + 8, {
+        width: COL_W.subtotal - 4,
+        align: "right",
+      });
+
+      drawTableBorder(yPos, HEADER_H);
+
+      yPos += HEADER_H;
+    };
+
+    // ─────────────────────────────────────────
+    //  HELPER: pastikan ruang cukup, kalau tidak -> halaman baru + redraw header tabel
+    //  withHeader = true artinya blok ini adalah baris tabel (perlu header tabel lagi)
+    // ─────────────────────────────────────────
+    const ensureSpace = (neededHeight, withHeader = true) => {
+      if (yPos + neededHeight > BOTTOM_LIMIT) {
+        doc.addPage();
+        yPos = 50;
+        if (withHeader) drawHeader();
+        return true;
+      }
+      return false;
     };
 
     // ─────────────────────────────────────────
@@ -297,41 +348,6 @@ export const exportPdfPenjualan = async (req, res) => {
 
     yPos += 20;
 
-    // ─────────────────────────────────────────
-    //  HEADER TABEL
-    // ─────────────────────────────────────────
-    const drawHeader = () => {
-      fillRect(MARGIN, yPos, TABLE_W, HEADER_H, COLOR.headerBg);
-
-      doc.font("Helvetica-Bold").fontSize(9).fillColor(COLOR.headerText);
-
-      doc.text("No", COL_X.no, yPos + 8, { width: COL_W.no, align: "center" });
-      doc.text("Tanggal", COL_X.tanggal + 4, yPos + 8, {
-        width: COL_W.tanggal - 4,
-        align: "left",
-      });
-      doc.text("Pengepul", COL_X.pengepul + 4, yPos + 8, {
-        width: COL_W.pengepul - 4,
-        align: "left",
-      });
-      doc.text("Barang", COL_X.barang + 4, yPos + 8, {
-        width: COL_W.barang - 4,
-        align: "left",
-      });
-      doc.text("Berat", COL_X.berat, yPos + 8, {
-        width: COL_W.berat - 4,
-        align: "right",
-      });
-      doc.text("Subtotal", COL_X.subtotal, yPos + 8, {
-        width: COL_W.subtotal - 4,
-        align: "right",
-      });
-
-      drawTableBorder(yPos, HEADER_H);
-
-      yPos += HEADER_H;
-    };
-
     drawHeader();
 
     // ─────────────────────────────────────────
@@ -345,11 +361,7 @@ export const exportPdfPenjualan = async (req, res) => {
       let subtotalTrx = 0;
 
       trx.items.forEach((item, idx) => {
-        if (yPos > 750) {
-          doc.addPage();
-          yPos = 50;
-          drawHeader();
-        }
+        ensureSpace(ROW_H);
 
         fillRect(
           MARGIN,
@@ -412,7 +424,6 @@ export const exportPdfPenjualan = async (req, res) => {
         isEven = !isEven;
       });
 
-      // ── Baris subtotal per transaksi ──
       fillRect(MARGIN, yPos, TABLE_W, ROW_H, COLOR.subtotalBg);
 
       doc
@@ -445,10 +456,7 @@ export const exportPdfPenjualan = async (req, res) => {
     // ─────────────────────────────────────────
     //  BARIS TOTAL KESELURUHAN
     // ─────────────────────────────────────────
-    if (yPos > 730) {
-      doc.addPage();
-      yPos = 50;
-    }
+    ensureSpace(ROW_H + 4, false);
 
     fillRect(MARGIN, yPos, TABLE_W, ROW_H + 4, COLOR.totalBg);
 
@@ -484,8 +492,15 @@ export const exportPdfPenjualan = async (req, res) => {
     yPos += ROW_H + 4;
 
     // ─────────────────────────────────────────
-    //  TANDA TANGAN
+    //  TANDA TANGAN + FOOTER
+    //  Dihitung sebagai SATU blok agar tidak terpotong/terpisah halaman.
+    //  Tinggi blok: jarak atas(30) + baris tempat&tgl(14) + jarak ttd(50)
+    //  + garis ttd + jarak footer(20) + garis + teks footer(~10) + sedikit padding
     // ─────────────────────────────────────────
+    const SIGNATURE_BLOCK_H = 30 + 14 + 50 + 20 + 18 + 10;
+
+    ensureSpace(SIGNATURE_BLOCK_H, false);
+
     yPos += 30;
 
     const ttdX = MARGIN + TABLE_W - 160;
