@@ -88,11 +88,25 @@ export const getJenisSampahChart = async (req, res) => {
   try {
     const id_bank_sampah = req.user?.id_bank_sampah || null;
 
-    const data = await DashboardModel.getJenisSampahStats(id_bank_sampah);
+    const [data, details] = await Promise.all([
+      DashboardModel.getJenisSampahStats(id_bank_sampah),
+      DashboardModel.getJenisSampahDetails(id_bank_sampah),
+    ]);
 
     const formatted = data.map((item) => ({
+      id_kategori: item.id_kategori,
       name: item.name,
       value: Number(item.value),
+      jenis: details
+        .filter(
+          (detail) =>
+            Number(detail.id_kategori) === Number(item.id_kategori),
+        )
+        .map((detail) => ({
+          id_jenis_sampah: detail.id_jenis_sampah,
+          nama_jenis: detail.nama_jenis,
+          berat: Number(detail.berat),
+        })),
     }));
 
     res.json(formatted);

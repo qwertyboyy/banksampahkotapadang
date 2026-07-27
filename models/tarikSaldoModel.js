@@ -1,5 +1,6 @@
 // models/tarikModel.js
 import db from "../config/db.js";
+import { getKonfigurasiBankSampah } from "./konfigurasiBankSampahModel.js";
 
 export const createTarik = async (data) => {
   const conn = await db.getConnection();
@@ -28,10 +29,22 @@ export const createTarik = async (data) => {
     }
 
     const saldoSebelum = parseFloat(nasabah.saldo);
+    const { minimum_penarikan } = await getKonfigurasiBankSampah(
+      id_bank_sampah,
+      conn,
+    );
 
     // 🔥 VALIDASI MINIMAL SALDO
-    if (saldoSebelum < 50000) {
-      throw new Error("Saldo minimal 50.000 untuk melakukan penarikan");
+    if (saldoSebelum < minimum_penarikan) {
+      throw new Error(
+        `Saldo minimal ${minimum_penarikan.toLocaleString("id-ID")} untuk melakukan penarikan`,
+      );
+    }
+
+    if (jumlah_tarik < minimum_penarikan) {
+      throw new Error(
+        `Jumlah tarik minimal ${minimum_penarikan.toLocaleString("id-ID")}`,
+      );
     }
 
     // 🔥 VALIDASI JUMLAH TARIK

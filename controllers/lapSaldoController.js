@@ -51,7 +51,7 @@ export const exportSaldoExcel = async (req, res) => {
 
     ws.columns = [
       { header: "Nama Nasabah", key: "nama_nasabah", width: 25 },
-      { header: "No Rekening", key: "nomor_rekening", width: 20 },
+      // { header: "No Rekening", key: "nomor_rekening", width: 20 },
       { header: "Saldo", key: "saldo_sesudah", width: 20 },
       { header: "Terakhir Update", key: "created_at", width: 25 },
     ];
@@ -138,17 +138,19 @@ export const exportSaldoPDF = async (req, res) => {
 
     const COL_W = {
       no: 30,
-      nama: 155,
-      // rekening: 110,
-      saldo: 110,
-      tanggal: 100,
+      // rekening: 90,
+      nama: 135,
+      saldo: 100,
+      tanggal: 150,
     };
 
     const COL_X = {
       no: MARGIN,
-      nama: MARGIN + COL_W.no,
-      saldo: MARGIN + COL_W.no + COL_W.nama,
-      tanggal: MARGIN + COL_W.no + COL_W.nama + COL_W.saldo,
+      // rekening: MARGIN + COL_W.no,
+      nama: MARGIN + COL_W.no /* + COL_W.rekening */,
+      saldo: MARGIN + COL_W.no /* + COL_W.rekening */ + COL_W.nama,
+      tanggal:
+        MARGIN + COL_W.no /* + COL_W.rekening */ + COL_W.nama + COL_W.saldo,
     };
 
     const ROW_H = 22;
@@ -164,11 +166,7 @@ export const exportSaldoPDF = async (req, res) => {
       doc.save().strokeColor(COLOR.border).lineWidth(0.5);
       doc.rect(MARGIN, y, TABLE_W, h).stroke();
 
-      [
-        COL_X.nama, // COL_X.rekening,
-        COL_X.saldo,
-        COL_X.tanggal,
-      ].forEach((x) => {
+      [COL_X.nama, COL_X.saldo, COL_X.tanggal].forEach((x) => {
         doc
           .moveTo(x, y)
           .lineTo(x, y + h)
@@ -195,11 +193,7 @@ export const exportSaldoPDF = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(13)
       .fillColor(COLOR.primary)
-      .text(
-        "Bank Sampah " + (bank?.nama_bank_sampah || "BANK SAMPAH"),
-        MARGIN + 70,
-        yPos + 10,
-      );
+      .text(bank?.nama_bank_sampah || "BANK SAMPAH", MARGIN + 70, yPos + 10);
 
     doc
       .font("Helvetica")
@@ -263,13 +257,22 @@ export const exportSaldoPDF = async (req, res) => {
       doc.font("Helvetica-Bold").fontSize(9).fillColor(COLOR.headerText);
 
       doc.text("No", COL_X.no, yPos + 8, { width: COL_W.no, align: "center" });
-      doc.text("Nama Nasabah", COL_X.nama + 4, yPos + 8);
-      // doc.text("No. Rekening", COL_X.rekening + 4, yPos + 8);
-      doc.text("Saldo", COL_X.saldo, yPos + 8, {
-        width: COL_W.saldo - 4,
+      // doc.text("No. Rekening", COL_X.rekening + 4, yPos + 8, {
+      //   width: COL_W.rekening - 8,
+      //   align: "center",
+      // });
+      doc.text("Nama Nasabah", COL_X.nama + 4, yPos + 8, {
+        width: COL_W.nama - 8,
+        align: "left",
+      });
+      doc.text("Saldo", COL_X.saldo + 4, yPos + 8, {
+        width: COL_W.saldo - 8,
         align: "right",
       });
-      doc.text("Tgl. Terakhir Menabung", COL_X.tanggal + 4, yPos + 8);
+      doc.text("Terakhir Menabung", COL_X.tanggal + 4, yPos + 8, {
+        width: COL_W.tanggal - 8,
+        align: "center",
+      });
 
       drawTableBorder(yPos, HEADER_H);
       yPos += HEADER_H;
@@ -331,13 +334,20 @@ export const exportSaldoPDF = async (req, res) => {
         align: "center",
       });
 
+      // doc
+      //   .font("Courier")
+      //   .fontSize(8)
+      //   .text(row.nomor_rekening || "-", COL_X.rekening + 4, yPos + 7, {
+      //     width: COL_W.rekening - 8,
+      //     align: "center",
+      //     lineBreak: false,
+      //   });
+
+      doc.font("Helvetica").fontSize(9);
       doc.text(capitalizeEachWord(row.nama_nasabah), COL_X.nama + 4, yPos + 6, {
         width: COL_W.nama - 8,
         ellipsis: true,
       });
-      // doc.font("Courier");
-      // doc.text(row.nomor_rekening || "-", COL_X.rekening + 4, yPos + 6);
-      doc.font("Helvetica");
 
       doc
         .font("Helvetica-Bold")
@@ -347,7 +357,7 @@ export const exportSaldoPDF = async (req, res) => {
           COL_X.saldo,
           yPos + 6,
           {
-            width: COL_W.saldo - 4,
+            width: COL_W.saldo - 8,
             align: "right",
           },
         );
@@ -356,10 +366,18 @@ export const exportSaldoPDF = async (req, res) => {
 
       doc.text(
         row.terakhir_setor
-          ? new Date(row.terakhir_setor).toLocaleDateString("id-ID")
+          ? new Date(row.terakhir_setor).toLocaleDateString("id-ID", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
           : "Belum Pernah",
         COL_X.tanggal + 4,
         yPos + 6,
+        {
+          width: COL_W.tanggal - 8,
+          align: "center",
+        },
       );
 
       drawTableBorder(yPos, ROW_H);
@@ -381,13 +399,13 @@ export const exportSaldoPDF = async (req, res) => {
 
       fillRect(MARGIN, yPos, TABLE_W, ROW_H, COLOR.totalBg);
 
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(9)
-        .fillColor(COLOR.primary)
-        .text(`Total (${data.length} nasabah)`, COL_X.no + 4, yPos + 6, {
-          width: COL_W.no + COL_W.nama - 8,
-        });
+      // doc
+      //   .font("Helvetica-Bold")
+      //   .fontSize(9)
+      //   .fillColor(COLOR.primary)
+      //   .text(`Total (${data.length} nasabah)`, COL_X.no + 4, yPos + 6, {
+      //     width: COL_W.no + COL_W.rekening + COL_W.nama - 8,
+      //   });
 
       doc.text(
         "Rp " + totalSaldo.toLocaleString("id-ID"),
@@ -399,8 +417,78 @@ export const exportSaldoPDF = async (req, res) => {
         },
       );
 
-      drawTableBorder(yPos, ROW_H);
+      doc
+        .save()
+        .strokeColor(COLOR.border)
+        .lineWidth(0.5)
+        .rect(MARGIN, yPos, TABLE_W, ROW_H)
+        .stroke()
+        .moveTo(COL_X.saldo, yPos)
+        .lineTo(COL_X.saldo, yPos + ROW_H)
+        .stroke()
+        .moveTo(COL_X.tanggal, yPos)
+        .lineTo(COL_X.tanggal, yPos + ROW_H)
+        .stroke()
+        .restore();
+
+      yPos += ROW_H;
     }
+
+    // ================= TANDA TANGAN =================
+    const SIGNATURE_BLOCK_H = 125;
+
+    if (yPos + SIGNATURE_BLOCK_H > PAGE_BOTTOM) {
+      doc.addPage();
+      yPos = 55;
+    } else {
+      yPos += 28;
+    }
+
+    const signatureWidth = 175;
+    const signatureX = MARGIN + TABLE_W - signatureWidth;
+    const tanggalCetak = new Date().toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .fillColor(COLOR.dark)
+      .text(`Padang, ${tanggalCetak}`, signatureX, yPos, {
+        width: signatureWidth,
+        align: "center",
+      });
+
+    yPos += 16;
+
+    doc.font("Helvetica-Bold").text("Direktur Bank Sampah", signatureX, yPos, {
+      width: signatureWidth,
+      align: "center",
+    });
+
+    yPos += 54;
+
+    doc
+      .save()
+      .moveTo(signatureX + 15, yPos)
+      .lineTo(signatureX + signatureWidth - 15, yPos)
+      .lineWidth(0.8)
+      .strokeColor(COLOR.dark)
+      .stroke()
+      .restore();
+
+    yPos += 7;
+
+    doc
+      .font("Helvetica")
+      .fontSize(8.5)
+      .fillColor(COLOR.muted)
+      .text(bank?.nama_bank_sampah || "Bank Sampah", signatureX, yPos, {
+        width: signatureWidth,
+        align: "center",
+      });
 
     doc.end();
   } catch (err) {

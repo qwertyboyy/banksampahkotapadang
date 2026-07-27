@@ -14,12 +14,23 @@ const Controller = {
   },
 
   koreksi: async (req, res) => {
+    const { referensi_transaksi, detail_koreksi, id_nasabah } = req.body;
+
+    if (
+      !referensi_transaksi ||
+      !id_nasabah ||
+      !Array.isArray(detail_koreksi) ||
+      detail_koreksi.length === 0
+    ) {
+      return res.status(400).json({
+        message: "Referensi transaksi, nasabah, dan detail koreksi wajib diisi",
+      });
+    }
+
     const conn = await db.getConnection();
     await conn.beginTransaction();
 
     try {
-      const { referensi_transaksi, detail_koreksi, id_nasabah } = req.body;
-
       const id_bank_sampah = req.user.id_bank_sampah; // 🔥 AMAN
       const admin_id = req.user.id_user; // 🔥 AMAN
 

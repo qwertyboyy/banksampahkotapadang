@@ -87,6 +87,7 @@ export const createSetor = async (data) => {
     return {
       message: "Setor berhasil",
       id_transaksi: idTransaksi,
+      saldo_sesudah: saldoSesudah,
     };
   } catch (error) {
     await conn.rollback();

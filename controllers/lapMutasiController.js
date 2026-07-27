@@ -7,7 +7,15 @@ import db from "../config/db.js";
 
 export const getMutasi = async (req, res) => {
   try {
-    const { start_date, end_date, keyword, last_id, limit, tipe } = req.query;
+    const {
+      start_date,
+      end_date,
+      id_nasabah,
+      keyword,
+      last_id,
+      limit,
+      tipe,
+    } = req.query;
 
     const id_bank_sampah = req.user?.id_bank_sampah;
 
@@ -25,6 +33,7 @@ export const getMutasi = async (req, res) => {
 
     const data = await mutasiModel.getMutasi({
       id_bank_sampah,
+      id_nasabah,
       start_date,
       end_date,
       keyword,
@@ -105,6 +114,18 @@ export const exportPDF = async (req, res) => {
       ...req.query,
       no_limit: true,
     });
+
+    let selectedNasabah = null;
+    if (req.query.id_nasabah) {
+      const [[nasabah]] = await db.query(
+        `SELECT nama_nasabah, nomor_rekening
+         FROM nasabah
+         WHERE id_nasabah = ? AND id_bank_sampah = ?
+         LIMIT 1`,
+        [req.query.id_nasabah, id_bank_sampah],
+      );
+      selectedNasabah = nasabah || null;
+    }
 
     const doc = new PDFDocument({
       margin: 40,
@@ -304,7 +325,12 @@ export const exportPDF = async (req, res) => {
       });
     }
 
-    if (req.query.keyword) {
+    if (selectedNasabah) {
+      filterItems.push({
+        label: "Nama / No Rekening",
+        value: `${selectedNasabah.nama_nasabah} / ${selectedNasabah.nomor_rekening}`,
+      });
+    } else if (req.query.keyword) {
       filterItems.push({
         label: "Nama / No Rekening",
         value: req.query.keyword,

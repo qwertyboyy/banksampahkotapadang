@@ -6,10 +6,67 @@ import BankSampah from "../models/bankSampahModel.js";
 import fs from "fs";
 import path from "path";
 
+const NAMA_BULAN = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+function getMonthPeriod(startMonth, endMonth) {
+  const monthPattern = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+  if (!startMonth && !endMonth) {
+    return {
+      startDate: null,
+      endDate: null,
+      periodLabel: "Semua Bulan",
+    };
+  }
+
+  const normalizedStart = startMonth || endMonth;
+  const normalizedEnd = endMonth || startMonth;
+
+  if (
+    !monthPattern.test(normalizedStart) ||
+    !monthPattern.test(normalizedEnd) ||
+    normalizedStart > normalizedEnd
+  ) {
+    const error = new Error("Rentang bulan tidak valid");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const [startYear, startMonthNumber] = normalizedStart.split("-").map(Number);
+  const [endYear, endMonthNumber] = normalizedEnd.split("-").map(Number);
+  const lastDay = new Date(Date.UTC(endYear, endMonthNumber, 0)).getUTCDate();
+
+  const startLabel = `${NAMA_BULAN[startMonthNumber - 1]} ${startYear}`;
+  const endLabel = `${NAMA_BULAN[endMonthNumber - 1]} ${endYear}`;
+
+  return {
+    startDate: `${normalizedStart}-01`,
+    endDate: `${normalizedEnd}-${String(lastDay).padStart(2, "0")}`,
+    periodLabel:
+      normalizedStart === normalizedEnd
+        ? startLabel
+        : `${startLabel} s.d. ${endLabel}`,
+  };
+}
+
 export const getLaporanPenjualan = async (req, res) => {
   try {
     const { id_bank_sampah } = req.user;
-    const { startDate, endDate, search } = req.query;
+    const { startMonth, endMonth, search } = req.query;
+    const { startDate, endDate } = getMonthPeriod(startMonth, endMonth);
 
     const data = await LaporanPenjualanModel.getLaporan(
       id_bank_sampah,
@@ -34,14 +91,17 @@ export const getLaporanPenjualan = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    res.status(500).json({ message: "Gagal ambil data" });
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.statusCode ? error.message : "Gagal ambil data" });
   }
 };
 
 export const exportExcelPenjualan = async (req, res) => {
   try {
     const { id_bank_sampah } = req.user;
-    const { startDate, endDate, search } = req.query;
+    const { startMonth, endMonth, search } = req.query;
+    const { startDate, endDate } = getMonthPeriod(startMonth, endMonth);
 
     const data = await LaporanPenjualanModel.getLaporanWithDetail(
       id_bank_sampah,
@@ -88,7 +148,9 @@ export const exportExcelPenjualan = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: "Gagal export excel" });
+    res
+      .status(err.statusCode || 500)
+      .json({ message: err.statusCode ? err.message : "Gagal export excel" });
   }
 };
 
@@ -99,7 +161,11 @@ export const exportPdfPenjualan = async (req, res) => {
       "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
       [id_bank_sampah],
     );
-    const { startDate, endDate, search } = req.query;
+    const { startMonth, endMonth, search } = req.query;
+    const { startDate, endDate, periodLabel } = getMonthPeriod(
+      startMonth,
+      endMonth,
+    );
 
     const data = await LaporanPenjualanModel.getLaporanWithDetail(
       id_bank_sampah,
@@ -126,6 +192,25 @@ export const exportPdfPenjualan = async (req, res) => {
         subtotal: Number(row.subtotal) || 0,
       });
     });
+
+    const transactions = Object.values(grouped);
+    const getMonthKey = (date) => {
+      const value = new Date(date);
+      return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}`;
+    };
+    const getMonthLabel = (date) => {
+      const value = new Date(date);
+      return `${NAMA_BULAN[value.getMonth()]} ${value.getFullYear()}`;
+    };
+    const monthTotals = transactions.reduce((totals, trx) => {
+      const key = getMonthKey(trx.tanggal);
+      const transactionTotal = trx.items.reduce(
+        (sum, item) => sum + item.subtotal,
+        0,
+      );
+      totals.set(key, (totals.get(key) || 0) + transactionTotal);
+      return totals;
+    }, new Map());
 
     const doc = new PDFDocument({ margin: 40, size: "A4" });
 
@@ -158,7 +243,7 @@ export const exportPdfPenjualan = async (req, res) => {
     const PAGE_H = 842; // A4
     const MARGIN = 45;
     const TABLE_W = PAGE_W - MARGIN * 2; // 505
-    const BOTTOM_LIMIT = PAGE_H - MARGIN; // batas aman bawah halaman (≈ 797)
+    const BOTTOM_LIMIT = PAGE_H - 32;
 
     // Lebar kolom (total = TABLE_W = 505)
     const COL_W = {
@@ -185,8 +270,9 @@ export const exportPdfPenjualan = async (req, res) => {
         COL_W.berat,
     };
 
-    const ROW_H = 22;
-    const HEADER_H = 26;
+    const ROW_H = 18;
+    const HEADER_H = 22;
+    const MONTH_H = 21;
 
     let yPos = 40;
 
@@ -216,6 +302,19 @@ export const exportPdfPenjualan = async (req, res) => {
           .stroke();
       });
       doc.restore();
+    };
+
+    const drawSubtotalBorder = (y, h) => {
+      doc
+        .save()
+        .strokeColor(COLOR.border)
+        .lineWidth(0.5)
+        .rect(MARGIN, y, TABLE_W, h)
+        .stroke()
+        .moveTo(COL_X.subtotal, y)
+        .lineTo(COL_X.subtotal, y + h)
+        .stroke()
+        .restore();
     };
 
     // ─────────────────────────────────────────
@@ -265,6 +364,34 @@ export const exportPdfPenjualan = async (req, res) => {
         return true;
       }
       return false;
+    };
+
+    const drawMonthBand = (label, total, continuation = false) => {
+      fillRect(MARGIN, yPos, TABLE_W, MONTH_H, COLOR.subtotalBg);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9)
+        .fillColor(COLOR.primary)
+        .text(
+          continuation ? `${label} (lanjutan)` : label.toUpperCase(),
+          MARGIN + 8,
+          yPos + 6,
+          { width: TABLE_W - 190, lineBreak: false },
+        )
+        .text(
+          `Total bulan: Rp ${total.toLocaleString("id-ID")}`,
+          MARGIN + TABLE_W - 185,
+          yPos + 6,
+          { width: 177, align: "right", lineBreak: false },
+        );
+      doc
+        .save()
+        .strokeColor(COLOR.border)
+        .lineWidth(0.5)
+        .rect(MARGIN, yPos, TABLE_W, MONTH_H)
+        .stroke()
+        .restore();
+      yPos += MONTH_H;
     };
 
     // ─────────────────────────────────────────
@@ -331,22 +458,18 @@ export const exportPdfPenjualan = async (req, res) => {
 
     yPos += 18;
 
-    const formatTanggal = (date) => new Date(date).toLocaleDateString("id-ID");
-
     doc
       .font("Helvetica")
       .fontSize(9)
       .fillColor(COLOR.muted)
-      .text(
-        `Periode: ${startDate ? formatTanggal(startDate) : "-"} s/d ${
-          endDate ? formatTanggal(endDate) : "-"
-        }`,
-        MARGIN,
-        yPos,
-        { width: TABLE_W, align: "center" },
-      );
+      .text(`Periode: ${periodLabel}`, MARGIN, yPos, {
+        width: TABLE_W,
+        align: "center",
+      });
 
     yPos += 20;
+
+    const formatTanggal = (date) => new Date(date).toLocaleDateString("id-ID");
 
     drawHeader();
 
@@ -357,11 +480,47 @@ export const exportPdfPenjualan = async (req, res) => {
     let totalSemua = 0;
     let isEven = false;
 
-    Object.values(grouped).forEach((trx) => {
+    let activeMonthKey = null;
+    let activeMonthLabel = "";
+    let activeMonthTotal = 0;
+
+    transactions.forEach((trx) => {
+      const transactionMonthKey = getMonthKey(trx.tanggal);
+      const transactionBlockHeight = (trx.items.length + 1) * ROW_H;
+      const maxTransactionBlock = BOTTOM_LIMIT - 50 - HEADER_H - MONTH_H;
+
+      if (transactionMonthKey !== activeMonthKey) {
+        const isFirstMonth = activeMonthKey === null;
+        activeMonthKey = transactionMonthKey;
+        activeMonthLabel = getMonthLabel(trx.tanggal);
+        activeMonthTotal = monthTotals.get(transactionMonthKey) || 0;
+        const monthGap = isFirstMonth ? 0 : 10;
+        const movedToNewPage = ensureSpace(
+          monthGap +
+            MONTH_H +
+            (transactionBlockHeight < maxTransactionBlock
+              ? transactionBlockHeight
+              : ROW_H * 2),
+        );
+        if (!movedToNewPage) {
+          yPos += monthGap;
+        }
+        drawMonthBand(activeMonthLabel, activeMonthTotal);
+      }
+
+      if (
+        transactionBlockHeight < maxTransactionBlock &&
+        ensureSpace(transactionBlockHeight)
+      ) {
+        drawMonthBand(activeMonthLabel, activeMonthTotal, true);
+      }
+
       let subtotalTrx = 0;
 
       trx.items.forEach((item, idx) => {
-        ensureSpace(ROW_H);
+        if (ensureSpace(ROW_H + (idx === trx.items.length - 1 ? ROW_H : 0))) {
+          drawMonthBand(activeMonthLabel, activeMonthTotal, true);
+        }
 
         fillRect(
           MARGIN,
@@ -448,9 +607,9 @@ export const exportPdfPenjualan = async (req, res) => {
           { width: COL_W.subtotal - 4, align: "right", lineBreak: false },
         );
 
-      drawTableBorder(yPos, ROW_H);
+      drawSubtotalBorder(yPos, ROW_H);
 
-      yPos += ROW_H + 8; // sedikit jarak antar transaksi
+      yPos += ROW_H + 2;
     });
 
     // ─────────────────────────────────────────
@@ -522,7 +681,7 @@ export const exportPdfPenjualan = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(9)
       .fillColor(COLOR.dark)
-      .text("Pengelola Bank Sampah", ttdX, yPos, {
+      .text("Direktur Bank Sampah", ttdX, yPos, {
         width: 155,
         align: "center",
       });

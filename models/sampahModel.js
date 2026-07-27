@@ -28,6 +28,26 @@ export const getAllJenis = async ({
   return { rows, total: count[0].total };
 };
 
+export const getLaporanHargaSampah = async (id_bank_sampah) => {
+  const [rows] = await db.query(
+    `SELECT
+       js.id_jenis_sampah,
+       js.nama_jenis,
+       js.harga_per_kg,
+       js.status_aktif,
+       k.nama_kategori
+     FROM jenis_sampah_bank js
+     JOIN master_kategori_sampah k
+       ON js.id_kategori = k.id_kategori
+     WHERE js.status_aktif = 1
+       AND js.id_bank_sampah = ?
+     ORDER BY k.nama_kategori ASC, js.nama_jenis ASC`,
+    [id_bank_sampah],
+  );
+
+  return rows;
+};
+
 export const createJenis = async (data) => {
   const { id_bank_sampah, id_kategori, nama_jenis, harga_per_kg } = data;
 

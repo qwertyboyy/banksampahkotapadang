@@ -69,23 +69,41 @@ LIMIT ? OFFSET ?
       no_telepon,
     } = data;
 
-    const [result] = await db.query(
-      `
-    INSERT INTO bank_sampah 
-    (kode_bank_sampah, no_urut_bank, nama_bank_sampah, id_kelurahan, alamat, no_telepon)
-    VALUES (?, ?, ?, ?, ?, ?)
-    `,
-      [
-        kode_bank_sampah,
-        no_urut_bank,
-        nama_bank_sampah,
-        id_kelurahan,
-        alamat,
-        no_telepon,
-      ],
-    );
+    const conn = await db.getConnection();
 
-    return result.insertId;
+    try {
+      await conn.beginTransaction();
+
+      const [result] = await conn.query(
+        `
+        INSERT INTO bank_sampah
+        (kode_bank_sampah, no_urut_bank, nama_bank_sampah, id_kelurahan, alamat, no_telepon)
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        [
+          kode_bank_sampah,
+          no_urut_bank,
+          nama_bank_sampah,
+          id_kelurahan,
+          alamat,
+          no_telepon,
+        ],
+      );
+
+      await conn.query(
+        `INSERT INTO konfigurasi_bank_sampah (id_bank_sampah)
+         VALUES (?)`,
+        [result.insertId],
+      );
+
+      await conn.commit();
+      return result.insertId;
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
   }
 
   static async update(id, data) {

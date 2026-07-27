@@ -1,5 +1,20 @@
 // controllers/tarikSaldoController.js
 import { createTarik } from "../models/tarikSaldoModel.js";
+import { getKonfigurasiBankSampah } from "../models/konfigurasiBankSampahModel.js";
+
+export const getKonfigurasiPenarikan = async (req, res) => {
+  try {
+    const konfigurasi = await getKonfigurasiBankSampah(
+      req.user.id_bank_sampah,
+    );
+    return res.json({ minimum_penarikan: konfigurasi.minimum_penarikan });
+  } catch (err) {
+    console.error("Gagal mengambil konfigurasi penarikan:", err);
+    return res
+      .status(500)
+      .json({ message: "Gagal mengambil konfigurasi penarikan" });
+  }
+};
 
 export const tarikSaldo = async (req, res) => {
   try {
@@ -18,10 +33,6 @@ export const tarikSaldo = async (req, res) => {
 
     if (isNaN(jumlah_tarik) || Number(jumlah_tarik) <= 0) {
       return res.status(400).json({ message: "Jumlah tarik tidak valid" });
-    }
-
-    if (jumlah_tarik < 50000) {
-      return res.status(400).json({ message: "Jumlah tarik minimal 50.000" });
     }
 
     const result = await createTarik({

@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import { getKonfigurasiBankSampah } from "./konfigurasiBankSampahModel.js";
 
 /* ==========================================================
  * HELPER
@@ -26,6 +27,8 @@ function formatDate(value) {
  * ========================================================== */
 
 export const getSummary = async (id_bank_sampah) => {
+  const { penyesuaian_setoran_laporan } =
+    await getKonfigurasiBankSampah(id_bank_sampah);
   // Ambil snapshot saldo kas
   const [[saldoAwal]] = await db.query(
     `
@@ -141,11 +144,9 @@ export const getSummary = async (id_bank_sampah) => {
   const kewajibanNasabah = Number(nasabah.total);
 
   const pencairanNasabah = Number(penarikanSemua.total);
-  const DEFAULT_SETORAN = 480000;
-
   const totalSetoran = Math.max(
     0,
-    Number(mutasi.total_setoran) - DEFAULT_SETORAN,
+    Number(mutasi.total_setoran) - penyesuaian_setoran_laporan,
   );
 
   const totalMutasiPenarikan = Number(mutasi.total_penarikan);
@@ -250,14 +251,14 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
     [tarikRows],
     [pengeluaranRows],
   ] = await Promise.all([
-      db.query(
-        `SELECT nama_bank_sampah, alamat, logo_path
+    db.query(
+      `SELECT nama_bank_sampah, alamat, logo_path
        FROM bank_sampah
        WHERE id_bank_sampah = ?`,
-        [id_bank_sampah],
-      ),
-      db.query(
-        `SELECT
+      [id_bank_sampah],
+    ),
+    db.query(
+      `SELECT
           tj.id_penjualan AS id,
           tj.tanggal AS tanggal,
           tj.total_harga AS nominal,
@@ -266,10 +267,10 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
        JOIN pengepul p ON p.id_pengepul = tj.id_pengepul
        WHERE tj.id_bank_sampah = ? AND tj.tanggal BETWEEN ? AND ?
        ORDER BY tj.tanggal ASC, tj.id_penjualan ASC`,
-        [id_bank_sampah, startDate, endDate],
-      ),
-      db.query(
-        `SELECT
+      [id_bank_sampah, startDate, endDate],
+    ),
+    db.query(
+      `SELECT
           ts.id_transaksi_setor AS id,
           DATE(ts.tanggal_setor) AS tanggal,
           ts.total_nilai AS nominal,
@@ -278,10 +279,10 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
        JOIN nasabah n ON n.id_nasabah = ts.id_nasabah
        WHERE ts.id_bank_sampah = ? AND DATE(ts.tanggal_setor) BETWEEN ? AND ?
        ORDER BY ts.tanggal_setor ASC`,
-        [id_bank_sampah, startDate, endDate],
-      ),
-      db.query(
-        `SELECT
+      [id_bank_sampah, startDate, endDate],
+    ),
+    db.query(
+      `SELECT
           tt.id_transaksi_tarik AS id,
           DATE(tt.tanggal_tarik) AS tanggal,
           tt.jumlah_tarik AS nominal,
@@ -290,10 +291,10 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
        JOIN nasabah n ON n.id_nasabah = tt.id_nasabah
        WHERE tt.id_bank_sampah = ? AND DATE(tt.tanggal_tarik) BETWEEN ? AND ?
        ORDER BY tt.tanggal_tarik ASC`,
-        [id_bank_sampah, startDate, endDate],
-      ),
-      db.query(
-        `SELECT
+      [id_bank_sampah, startDate, endDate],
+    ),
+    db.query(
+      `SELECT
           p.id_pengeluaran AS id,
           p.tanggal AS tanggal,
           p.nominal AS nominal,
@@ -304,9 +305,9 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
          ON kp.id_kategori_pengeluaran = p.id_kategori_pengeluaran
        WHERE p.id_bank_sampah = ? AND p.tanggal BETWEEN ? AND ?
        ORDER BY p.tanggal ASC, p.id_pengeluaran ASC`,
-        [id_bank_sampah, startDate, endDate],
-      ),
-    ]);
+      [id_bank_sampah, startDate, endDate],
+    ),
+  ]);
 
   const bankSampahRow = bankSampahRows[0];
 
@@ -341,7 +342,10 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
   const totalPenjualan = penjualanItems.reduce((s, it) => s + it.nominal, 0);
   const totalSetoran = setoranItems.reduce((s, it) => s + it.nominal, 0);
   const totalPenarikan = penarikanItems.reduce((s, it) => s + it.nominal, 0);
-  const totalPengeluaran = pengeluaranItems.reduce((s, it) => s + it.nominal, 0);
+  const totalPengeluaran = pengeluaranItems.reduce(
+    (s, it) => s + it.nominal,
+    0,
+  );
   const labaBersih =
     totalPenjualan - totalSetoran - totalPenarikan - totalPengeluaran;
 

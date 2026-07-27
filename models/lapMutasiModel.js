@@ -2,6 +2,7 @@ import db from "../config/db.js";
 
 export const getMutasi = async ({
   id_bank_sampah,
+  id_nasabah,
   start_date,
   end_date,
   keyword,
@@ -17,6 +18,7 @@ export const getMutasi = async ({
   // ================= NORMALIZE INPUT =================
   const safeStart = start_date || null;
   const safeEnd = end_date || null;
+  const safeNasabahId = Number(id_nasabah) || null;
   const safeKeyword = keyword?.trim() || null;
   const safeTipe = tipe?.trim().toUpperCase() || null;
   const safeLastId = Number(last_id) || null;
@@ -39,6 +41,11 @@ export const getMutasi = async ({
   `;
 
   const params = [id_bank_sampah, id_bank_sampah];
+
+  if (safeNasabahId) {
+    query += ` AND m.id_nasabah = ?`;
+    params.push(safeNasabahId);
+  }
 
   // ================= FILTER TANGGAL =================
   if (safeStart && safeEnd) {
@@ -92,10 +99,6 @@ export const getMutasi = async ({
     query += ` LIMIT ${finalLimit}`;
   }
 
-  // ================= DEBUG (optional, bisa hapus nanti) =================
-  // console.log("QUERY:", query);
-  // console.log("PARAMS:", params);
-  console.log("TIPE:", tipe);
   const [rows] = await db.execute(query, params);
   return rows;
 };
@@ -115,7 +118,6 @@ export const insertMutasi = async ({
     [id_nasabah],
   );
 
-  // 🔥 FIX: handle kalau nasabah tidak ditemukan
   if (!rows.length) {
     throw new Error("Nasabah tidak ditemukan");
   }

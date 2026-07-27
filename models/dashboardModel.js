@@ -55,6 +55,7 @@ class DashboardModel {
   static async getJenisSampahStats(id_bank_sampah = null) {
     let query = `
     SELECT 
+      k.id_kategori,
       k.nama_kategori AS name,
       SUM(ds.berat) AS value
     FROM transaksi_setor ts
@@ -80,6 +81,41 @@ class DashboardModel {
 
     const [rows] = await db.query(query, params);
 
+    return rows;
+  }
+
+  static async getJenisSampahDetails(id_bank_sampah = null) {
+    let query = `
+      SELECT
+        k.id_kategori,
+        js.id_jenis_sampah,
+        js.nama_jenis,
+        SUM(ds.berat) AS berat
+      FROM transaksi_setor ts
+      JOIN detail_setor ds
+        ON ts.id_transaksi_setor = ds.id_transaksi_setor
+      JOIN jenis_sampah_bank js
+        ON ds.id_jenis_sampah = js.id_jenis_sampah
+      JOIN master_kategori_sampah k
+        ON js.id_kategori = k.id_kategori
+    `;
+
+    const params = [];
+
+    if (id_bank_sampah) {
+      query += ` WHERE ts.id_bank_sampah = ?`;
+      params.push(id_bank_sampah);
+    }
+
+    query += `
+      GROUP BY
+        k.id_kategori,
+        js.id_jenis_sampah,
+        js.nama_jenis
+      ORDER BY k.id_kategori, berat DESC, js.nama_jenis ASC
+    `;
+
+    const [rows] = await db.query(query, params);
     return rows;
   }
 

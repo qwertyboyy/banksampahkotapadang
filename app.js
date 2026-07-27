@@ -36,6 +36,7 @@ import transferRoutes from "./routes/transferRoutes.js";
 import mapsRoutes from "./routes/mapsRoutes.js";
 import lapKeuanganRoutes from "./routes/lapKeuanganRoutes.js";
 import pengeluaranRoutes from "./routes/pengeluaranRoutes.js";
+import adminNasabahAccountRoutes from "./routes/adminNasabahAccountRoutes.js";
 
 const app = express();
 
@@ -98,6 +99,7 @@ app.use("/api/", transferRoutes);
 app.use("/api/maps", mapsRoutes);
 app.use("/api/laporan-keuangan", lapKeuanganRoutes);
 app.use("/api/pengeluaran", pengeluaranRoutes);
+app.use("/api/admin-bank/nasabah-accounts", adminNasabahAccountRoutes);
 /**
  * HEALTH CHECK
  */
