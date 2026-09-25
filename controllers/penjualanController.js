@@ -8,6 +8,8 @@ export const createTransaksiJual = async (req, res) => {
     let { id_pengepul, tanggal, catatan, items } = req.body;
     const id_bank_sampah = req.user.id_bank_sampah;
 
+    const [owned] = await conn.query("SELECT id_pengepul FROM pengepul WHERE id_pengepul = ? AND id_bank_sampah = ?", [id_pengepul, id_bank_sampah]);
+    if (!owned.length) return res.status(404).json({ message: "Pengepul tidak ditemukan" });
     // ================= FIX ITEMS STRING =================
     if (typeof items === "string") {
       items = JSON.parse(items);
@@ -38,7 +40,7 @@ export const createTransaksiJual = async (req, res) => {
         });
       }
 
-      if (item.berat <= 0 || item.harga_per_kg <= 0) {
+      if (!Number.isFinite(Number(item.berat)) || !Number.isFinite(Number(item.harga_per_kg)) || item.berat <= 0 || item.harga_per_kg <= 0) {
         return res.status(400).json({
           message: "Berat / harga tidak valid",
         });

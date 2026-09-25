@@ -18,7 +18,7 @@ const createUploader = (folder) => {
     storage,
 
     limits: {
-      fileSize: 10 * 1024 * 1024,
+      fileSize: 2 * 1024 * 1024,
     },
 
     fileFilter: (req, file, cb) => {
@@ -48,7 +48,7 @@ const createUploader = (folder) => {
 
       const filepath = path.join(uploadPath, filename);
 
-      await sharp(req.file.buffer)
+      await sharp(req.file.buffer, { limitInputPixels: 16000000 })
         .rotate()
         .resize({
           width: 500,

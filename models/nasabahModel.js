@@ -160,7 +160,7 @@ const NasabahModel = {
   },
 
   // ================= UPDATE =================
-  updateNasabah: async (id_nasabah, data) => {
+  updateNasabah: async (id_nasabah, data, id_bank_sampah) => {
     const query = `
       UPDATE nasabah
       SET
@@ -169,7 +169,7 @@ const NasabahModel = {
         alamat = ?,
         no_hp = ?,
         status_aktif = 1
-      WHERE id_nasabah = ?
+      WHERE id_nasabah = ? AND id_bank_sampah = ?
     `;
 
     await db.query(query, [
@@ -178,6 +178,7 @@ const NasabahModel = {
       data.alamat,
       data.no_hp,
       id_nasabah,
+      id_bank_sampah,
     ]);
   },
 
@@ -215,10 +216,15 @@ const NasabahModel = {
   },
 
   // ================= DELETE =================
-  deleteNasabah: async (id_nasabah) => {
-    await db.query(`UPDATE nasabah SET status_aktif = 0 WHERE id_nasabah = ?`, [
-      id_nasabah,
-    ]);
+  deleteNasabah: async (id_nasabah, id_bank_sampah) => {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+      await conn.query("UPDATE nasabah SET status_aktif = 0 WHERE id_nasabah = ? AND id_bank_sampah = ?", [id_nasabah, id_bank_sampah]);
+      await conn.query("UPDATE users SET session_version = session_version + 1 WHERE id_nasabah = ? AND id_bank_sampah = ?", [id_nasabah, id_bank_sampah]);
+      await conn.commit();
+    } catch (err) { await conn.rollback(); throw err; }
+    finally { conn.release(); }
   },
 
   // ================= SALDO =================

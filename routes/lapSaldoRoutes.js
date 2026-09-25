@@ -4,12 +4,12 @@ import {
   exportSaldoExcel,
   exportSaldoPDF,
 } from "../controllers/lapSaldoController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getSaldoNasabah);
-router.get("/export/excel", authMiddleware, exportSaldoExcel);
-router.get("/export/pdf", authMiddleware, exportSaldoPDF);
+router.get("/", authMiddleware, roleMiddleware("admin_bank"), getSaldoNasabah);
+router.get("/export/excel", authMiddleware, roleMiddleware("admin_bank"), exportSaldoExcel);
+router.get("/export/pdf", authMiddleware, roleMiddleware("admin_bank"), exportSaldoPDF);
 
 export default router;

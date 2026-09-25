@@ -9,6 +9,7 @@ export const loginUser = async (identifier) => {
         u.username,
         u.email,
         u.password_hash,
+      u.session_version,
         u.role,
         u.id_bank_sampah,
         b.nama_bank_sampah,
@@ -168,7 +169,7 @@ export const updateUser = async (
         nama_lengkap = ?,
         username = ?,
         email = ?,
-        role = ?
+        session_version = session_version + 1, role = ?
      WHERE id_user = ?`,
     [nama_lengkap, username, email, role, id_user],
   );
@@ -185,7 +186,7 @@ export const resetPassword = async (id_user, password) => {
 
   const [result] = await pool.query(
     `UPDATE users
-     SET password_hash = ?
+     SET session_version = session_version + 1, password_hash = ?
      WHERE id_user = ?`,
     [password_hash, id_user],
   );
@@ -207,7 +208,7 @@ export const deleteUser = async (id_user) => {
 
 export const activateUser = async (id_user) => {
   const [result] = await pool.query(
-    `UPDATE users SET status_aktif = 1, status_akun = 'aktif' WHERE id_user = ?`,
+    `UPDATE users SET session_version = session_version + 1, status_aktif = 1, status_akun = 'aktif' WHERE id_user = ?`,
     [id_user],
   );
 
@@ -216,7 +217,7 @@ export const activateUser = async (id_user) => {
 
 export const unActivateUser = async (id_user) => {
   const [result] = await pool.query(
-    `UPDATE users SET status_aktif = 0, status_akun = 'ditolak' WHERE id_user = ?`,
+    `UPDATE users SET session_version = session_version + 1, status_aktif = 0, status_akun = 'ditolak' WHERE id_user = ?`,
     [id_user],
   );
 

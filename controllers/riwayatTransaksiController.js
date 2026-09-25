@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import db from "../config/db.js";
 import RiwayatModel from "../models/riwayatTransaksiModel.js";
 import { insertMutasi } from "../models/lapMutasiModel.js";
@@ -34,16 +35,22 @@ const Controller = {
       const id_bank_sampah = req.user.id_bank_sampah; // 🔥 AMAN
       const admin_id = req.user.id_user; // 🔥 AMAN
 
-      const root = await RiwayatModel.getRoot(referensi_transaksi);
+      const [owned] = await conn.query("SELECT id_transaksi_setor FROM transaksi_setor WHERE id_transaksi_setor = ? AND id_bank_sampah = ? AND id_nasabah = ? FOR UPDATE", [referensi_transaksi, id_bank_sampah, id_nasabah]);
+      if (!owned.length) throw new Error("Transaksi tidak ditemukan pada rekening ini");
+      const root = await RiwayatModel.getRoot(referensi_transaksi, req.user.id_bank_sampah);
 
-      const state = await RiwayatModel.getCurrentState(root);
+      const state = await RiwayatModel.getCurrentState(root, req.user.id_bank_sampah);
 
       let total_berat = 0;
       let total_nilai = 0;
 
       const detailInsert = [];
 
+      const seen = new Set();
       for (const item of detail_koreksi) {
+        if (seen.has(String(item.id_jenis_sampah))) throw new Error("Jenis sampah koreksi duplikat");
+        seen.add(String(item.id_jenis_sampah));
+        if (!Number.isFinite(Number(item.berat)) || Number(item.berat) < 0) throw new Error("Berat koreksi tidak valid");
         const old = state.find(
           (s) => s.id_jenis_sampah === item.id_jenis_sampah,
         );
@@ -106,7 +113,7 @@ const Controller = {
     } catch (err) {
       await conn.rollback();
       console.error(err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: publicError(err) });
     } finally {
       conn.release();
     }
@@ -116,8 +123,10 @@ const Controller = {
     try {
       const { id } = req.params;
 
-      const root = await RiwayatModel.getRoot(id);
-      const data = await RiwayatModel.getCurrentState(root);
+      const [owned] = await db.query("SELECT id_transaksi_setor FROM transaksi_setor WHERE id_transaksi_setor = ? AND id_bank_sampah = ?", [id, req.user.id_bank_sampah]);
+      if (!owned.length) return res.status(404).json({ message: "Transaksi tidak ditemukan" });
+      const root = await RiwayatModel.getRoot(id, req.user.id_bank_sampah);
+      const data = await RiwayatModel.getCurrentState(root, req.user.id_bank_sampah);
 
       res.json({
         success: true,

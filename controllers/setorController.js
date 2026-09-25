@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 // controllers/setorController.js
 import { createSetor } from "../models/setorModel.js";
 
@@ -21,6 +22,6 @@ export const setorSampah = async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };

@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import { PengepulModel } from "../models/pengepulModel.js";
 
 export const createPengepul = async (req, res) => {
@@ -21,7 +22,7 @@ export const createPengepul = async (req, res) => {
       id,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };
 
@@ -33,7 +34,7 @@ export const getAllPengepul = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };
 
@@ -50,7 +51,7 @@ export const getPengepulById = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };
 
@@ -76,7 +77,7 @@ export const updatePengepul = async (req, res) => {
 
     res.json({ message: "Berhasil diupdate" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };
 
@@ -93,6 +94,6 @@ export const deletePengepul = async (req, res) => {
 
     res.json({ message: "Berhasil dihapus" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: publicError(error) });
   }
 };

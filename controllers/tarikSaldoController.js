@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 // controllers/tarikSaldoController.js
 import { createTarik } from "../models/tarikSaldoModel.js";
 import { getKonfigurasiBankSampah } from "../models/konfigurasiBankSampahModel.js";
@@ -31,7 +32,7 @@ export const tarikSaldo = async (req, res) => {
       return res.status(400).json({ message: "Data tidak lengkap" });
     }
 
-    if (isNaN(jumlah_tarik) || Number(jumlah_tarik) <= 0) {
+    if (!Number.isFinite(Number(jumlah_tarik)) || Number(jumlah_tarik) <= 0) {
       return res.status(400).json({ message: "Jumlah tarik tidak valid" });
     }
 
@@ -45,6 +46,6 @@ export const tarikSaldo = async (req, res) => {
 
     res.status(201).json(result);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: publicError(err) });
   }
 };

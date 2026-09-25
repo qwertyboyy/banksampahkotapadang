@@ -4,11 +4,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test tests/*.test.js",
     "start": "node app.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js",
     "staging": "cross-env NODE_ENV=staging node app.js",
-    "prod": "cross-env NODE_ENV=production node app.js"
+    "prod": "cross-env NODE_ENV=production node app.js",
+    "test:security-db": "node tests/security-db.integration.js",
+    "migrate:security": "node scripts/migrate-security.js",
+    "smtp:verify": "node scripts/verify-smtp.js"
   },
   "keywords": [],
   "author": "",

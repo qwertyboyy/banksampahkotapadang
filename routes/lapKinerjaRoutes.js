@@ -5,13 +5,13 @@ import {
   exportExcelLaporanKinerja,
   exportPdfLaporanKinerja,
 } from "../controllers/lapKinerjaController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getLaporanKinerja);
-router.get("/tahun", authMiddleware, getAvailableYears);
-router.get("/excel", authMiddleware, exportExcelLaporanKinerja);
-router.get("/pdf", authMiddleware, exportPdfLaporanKinerja);
+router.get("/", authMiddleware, roleMiddleware("admin_bank"), getLaporanKinerja);
+router.get("/tahun", authMiddleware, roleMiddleware("admin_bank"), getAvailableYears);
+router.get("/excel", authMiddleware, roleMiddleware("admin_bank"), exportExcelLaporanKinerja);
+router.get("/pdf", authMiddleware, roleMiddleware("admin_bank"), exportPdfLaporanKinerja);
 
 export default router;

@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import * as JenisModel from "../models/sampahModel.js";
 import db from "../config/db.js";
 import PDFDocument from "pdfkit";
@@ -75,7 +76,7 @@ export const updateJenis = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await JenisModel.updateJenis(id, req.body);
+    await JenisModel.updateJenis(id, req.body, req.user.id_bank_sampah);
 
     res.json({ message: "Berhasil update" });
   } catch {
@@ -88,7 +89,7 @@ export const deleteJenis = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await JenisModel.deleteJenis(id);
+    await JenisModel.deleteJenis(id, req.user.id_bank_sampah);
 
     res.json({ message: "Berhasil hapus (nonaktif)" });
   } catch {
@@ -111,7 +112,7 @@ export const getJenisSelectController = async (req, res) => {
     console.error("ERROR JENIS SELECT:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: publicError(error),
     });
   }
 };

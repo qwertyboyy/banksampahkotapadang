@@ -1,10 +1,9 @@
+import { passwordPolicy, sensitiveLimits } from "../middlewares/security.js";
 import express from "express";
 import {
   getMe,
   updateProfile,
   updatePassword,
-  forgotPassword,
-  resetPassword,
 } from "../controllers/settingAkunController.js";
 
 import { authMiddleware } from "../middlewares/authMiddleware.js";
@@ -22,10 +21,10 @@ router.put(
 
 router.get("/me", authMiddleware, getMe);
 
-router.put("/password", authMiddleware, updatePassword);
+router.put("/password", authMiddleware, ...sensitiveLimits, passwordPolicy("password_baru"), updatePassword);
 
-router.post("/forgot-password", forgotPassword);
 
-router.post("/reset-password", resetPassword);
+
+
 
 export default router;

@@ -9,11 +9,11 @@ import {
   getKategoriPengeluaran,
 } from "../controllers/pengeluaranController.js";
 
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, roleMiddleware("admin_bank"));
 
 router.get("/kategori", getKategoriPengeluaran);
 

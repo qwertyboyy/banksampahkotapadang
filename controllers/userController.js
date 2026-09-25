@@ -1,48 +1,8 @@
+import { publicError } from "../middlewares/security.js";
 import pool from "../config/db.js";
 import bcrypt from "bcryptjs";
 import * as UserModel from "../models/userModel.js";
 import NasabahModel from "../models/nasabahModel.js";
-
-export const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const user = await loginUser(username);
-
-    if (!user) {
-      return res.status(404).json({ message: "User tidak ditemukan" });
-    }
-
-    if (user.status_aktif === 0) {
-      return res.status(403).json({ message: "User tidak aktif" });
-    }
-
-    const match = await bcrypt.compare(password, user.password_hash);
-
-    if (!match) {
-      return res.status(401).json({ message: "Password salah" });
-    }
-
-    const token = jwt.sign(
-      {
-        id_user: user.id_user,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" },
-    );
-    res.json({
-      token,
-      user: {
-        id_user: user.id_user,
-        nama_lengkap: user.nama_lengkap,
-        role: user.role,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 export const getUsers = async (req, res) => {
   try {
@@ -52,7 +12,7 @@ export const getUsers = async (req, res) => {
 
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -157,7 +117,7 @@ export const addUser = async (req, res) => {
     await conn.rollback();
     console.error(err);
     res.status(500).json({
-      message: err.message,
+      message: publicError(err),
     });
   } finally {
     conn.release();
@@ -174,7 +134,7 @@ export const editUser = async (req, res) => {
       message: "User berhasil diperbarui",
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -189,7 +149,7 @@ export const resetUserPassword = async (req, res) => {
       message: "Password berhasil direset",
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -203,6 +163,6 @@ export const removeUser = async (req, res) => {
       message: "User berhasil dihapus",
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };

@@ -117,10 +117,10 @@ export const resetNasabahPassword = async (req, res) => {
     const { id_user } = req.params;
     const { password } = req.body;
 
-    if (!password || password.length < 6) {
+    if (!password || password.length < 12) {
       return res.status(400).json({
         success: false,
-        message: "Password baru minimal 6 karakter",
+        message: "Password baru minimal 12 karakter",
       });
     }
 

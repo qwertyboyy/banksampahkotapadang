@@ -1,3 +1,4 @@
+import { passwordPolicy } from "../middlewares/security.js";
 import express from "express";
 import {
   authMiddleware,
@@ -20,6 +21,6 @@ router.get("/", getNasabahAccounts);
 router.get("/pending", getPendingNasabahAccounts);
 router.patch("/:id_user/approve", approveNasabahAccount);
 router.patch("/:id_user/reject", rejectNasabahAccount);
-router.patch("/:id_user/reset-password", resetNasabahPassword);
+router.patch("/:id_user/reset-password", passwordPolicy("password"), resetNasabahPassword);
 
 export default router;

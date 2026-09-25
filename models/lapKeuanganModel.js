@@ -234,6 +234,28 @@ export async function getRincianBulanan(id_bank_sampah, tahun) {
   return rincian;
 }
 
+export async function getLaporanTahunan(id_bank_sampah, tahun) {
+  const [[bankSampahRows], rincian] = await Promise.all([
+    db.query(
+      `SELECT nama_bank_sampah, alamat, logo_path
+       FROM bank_sampah
+       WHERE id_bank_sampah = ?`,
+      [id_bank_sampah],
+    ),
+    getRincianBulanan(id_bank_sampah, tahun),
+  ]);
+
+  const bankSampahRow = bankSampahRows[0];
+  return {
+    bankSampah: {
+      nama: bankSampahRow?.nama_bank_sampah || "-",
+      alamat: bankSampahRow?.alamat || "-",
+      logoPath: bankSampahRow?.logo_path || null,
+    },
+    rincian,
+  };
+}
+
 /* ==========================================================
  * LAPORAN CETAK (PDF harian / bulanan)
  * PENTING: saldoKas TIDAK dimasukkan di sini secara sengaja.

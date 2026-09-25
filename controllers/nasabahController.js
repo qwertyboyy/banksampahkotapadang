@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import NasabahModel from "../models/nasabahModel.js";
 import pool from "../config/db.js";
 
@@ -11,7 +12,7 @@ const NasabahController = {
       res.json({ success: true, data });
     } catch (error) {
       console.error("ERROR getBankSampahNasabah:", error);
-      res.status(500).json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: publicError(error) });
     }
   },
 
@@ -38,7 +39,7 @@ const NasabahController = {
       res.json({ success: true, data, total, page, limit });
     } catch (error) {
       console.error("ERROR getNasabahByBank:", error);
-      res.status(500).json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: publicError(error) });
     }
   },
 
@@ -67,14 +68,13 @@ const NasabahController = {
       res.json({ success: true, data, total, page, limit });
     } catch (error) {
       console.error("ERROR getNasabahAdminBank:", error);
-      res.status(500).json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: publicError(error) });
     }
   },
 
   // ================= CREATE NASABAH =================
 
   createNasabah: async (req, res) => {
-    console.log("REQ.USER FULL:", req.user);
     const conn = await pool.getConnection();
 
     try {
@@ -121,7 +121,7 @@ const NasabahController = {
 
       res.status(500).json({
         success: false,
-        message: error.message,
+        message: publicError(error),
       });
     } finally {
       conn.release();
@@ -159,7 +159,7 @@ const NasabahController = {
 
       res.status(500).json({
         success: false,
-        message: error.message,
+        message: publicError(error),
       });
     } finally {
       conn.release();
@@ -186,7 +186,7 @@ const NasabahController = {
         nik,
         alamat,
         no_hp,
-      });
+      }, req.user.id_bank_sampah);
 
       res.json({
         success: true,
@@ -197,7 +197,7 @@ const NasabahController = {
 
       res.status(500).json({
         success: false,
-        message: error.message,
+        message: publicError(error),
       });
     }
   },
@@ -208,7 +208,7 @@ const NasabahController = {
     try {
       const { id_nasabah } = req.params;
 
-      await NasabahModel.deleteNasabah(id_nasabah);
+      await NasabahModel.deleteNasabah(id_nasabah, req.user.id_bank_sampah);
 
       res.json({
         success: true,
@@ -216,7 +216,7 @@ const NasabahController = {
       });
     } catch (error) {
       console.error("ERROR deleteNasabah:", error);
-      res.status(500).json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: publicError(error) });
     }
   },
 
@@ -232,7 +232,7 @@ const NasabahController = {
       res.json(data);
     } catch (error) {
       console.error("ERROR getNasabahSelect:", error);
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: publicError(error) });
     }
   },
 
@@ -261,7 +261,7 @@ const NasabahController = {
       res.json(data);
     } catch (err) {
       console.error("ERROR getSaldoNasabah:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: publicError(err) });
     }
   },
 };

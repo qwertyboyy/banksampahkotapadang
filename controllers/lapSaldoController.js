@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import * as saldoModel from "../models/lapSaldoModel.js";
 import db from "../config/db.js";
 import PDFDocument from "pdfkit";
@@ -80,7 +81,7 @@ export const exportSaldoExcel = async (req, res) => {
     res.end();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -493,6 +494,6 @@ export const exportSaldoPDF = async (req, res) => {
     doc.end();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };

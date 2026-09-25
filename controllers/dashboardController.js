@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import DashboardModel from "../models/dashboardModel.js";
 import db from "../config/db.js";
 
@@ -31,7 +32,7 @@ export const getDashboardStats = async (req, res) => {
 
     res.status(500).json({
       message: "Gagal mengambil data dashboard",
-      error: error.message,
+      error: publicError(error),
     });
   }
 };
@@ -76,7 +77,7 @@ export const getSetoranChart = async (req, res) => {
 
     res.status(500).json({
       message: "Error mengambil chart setoran",
-      error: error.message,
+      error: publicError(error),
     });
   }
 };
@@ -154,7 +155,7 @@ export const getChartKeuangan = async (req, res) => {
 
     res.status(500).json({
       message: "Error mengambil chart keuangan",
-      error: error.message,
+      error: publicError(error),
     });
   }
 };
@@ -215,7 +216,7 @@ export const updateProfilNasabah = async (req, res) => {
 
     res.json({ message: "Profil berhasil diperbarui" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 

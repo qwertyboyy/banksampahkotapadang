@@ -88,7 +88,7 @@ class AccountModel {
   static async updatePassword(id_user, password_hash) {
     await db.query(
       `UPDATE users
-      SET password_hash = ?
+      SET session_version = session_version + 1, password_hash = ?
       WHERE id_user = ?`,
       [password_hash, id_user],
     );

@@ -1,3 +1,4 @@
+import { sensitiveLimits, otpSendLimits, passwordPolicy } from "../middlewares/security.js";
 import express from "express";
 
 import {
@@ -7,8 +8,8 @@ import {
 
 const router = express.Router();
 
-router.post("/forgot-password", requestResetPassword);
+router.post("/forgot-password", ...otpSendLimits, requestResetPassword);
 
-router.post("/reset-password", resetPassword);
+router.post("/reset-password", ...sensitiveLimits, passwordPolicy("password"), resetPassword);
 
 export default router;

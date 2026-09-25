@@ -114,8 +114,8 @@ export const insertMutasi = async ({
   admin_id,
 }) => {
   const [rows] = await conn.execute(
-    `SELECT saldo FROM nasabah WHERE id_nasabah = ? FOR UPDATE`,
-    [id_nasabah],
+    `SELECT saldo FROM nasabah WHERE id_nasabah = ? AND id_bank_sampah = ? AND status_aktif = 1 FOR UPDATE`,
+    [id_nasabah, id_bank_sampah],
   );
 
   if (!rows.length) {
@@ -125,6 +125,7 @@ export const insertMutasi = async ({
   const saldo_sebelum = Number(rows[0].saldo || 0);
   const nominal = Number(jumlah || 0);
   const saldo_sesudah = saldo_sebelum + nominal;
+  if (!Number.isFinite(nominal) || saldo_sesudah < 0) throw new Error("Saldo hasil koreksi tidak valid");
 
   await conn.execute(
     `INSERT INTO mutasi_saldo

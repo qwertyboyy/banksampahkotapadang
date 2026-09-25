@@ -77,7 +77,7 @@ export const approveNasabahAccount = async (id_user, id_bank_sampah) => {
   const [result] = await db.query(
     `
     UPDATE users
-    SET status_akun = 'aktif',
+    SET session_version = session_version + 1, status_akun = 'aktif',
         status_aktif = 1
     WHERE id_user = ?
       AND id_bank_sampah = ?
@@ -93,7 +93,7 @@ export const rejectNasabahAccount = async (id_user, id_bank_sampah) => {
   const [result] = await db.query(
     `
     UPDATE users
-    SET status_akun = 'ditolak',
+    SET session_version = session_version + 1, status_akun = 'ditolak',
         status_aktif = 0
     WHERE id_user = ?
       AND id_bank_sampah = ?
@@ -115,7 +115,7 @@ export const resetNasabahPassword = async (
   const [result] = await db.query(
     `
     UPDATE users
-    SET password_hash = ?
+    SET session_version = session_version + 1, password_hash = ?
     WHERE id_user = ?
       AND id_bank_sampah = ?
       AND role = 'nasabah'

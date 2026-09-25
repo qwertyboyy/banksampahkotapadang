@@ -47,7 +47,7 @@ const RiwayatModel = {
     return rows;
   },
 
-  getRoot: async (id) => {
+  getRoot: async (id, id_bank_sampah) => {
     const [rows] = await db.execute(
       `
       SELECT 
@@ -56,15 +56,15 @@ const RiwayatModel = {
           ELSE referensi_transaksi
         END AS root_id
       FROM transaksi_setor
-      WHERE id_transaksi_setor = ?
+      WHERE id_transaksi_setor = ? AND id_bank_sampah = ?
     `,
-      [id],
+      [id, id_bank_sampah],
     );
 
     return rows[0]?.root_id;
   },
 
-  getCurrentState: async (root_id) => {
+  getCurrentState: async (root_id, id_bank_sampah) => {
     const [rows] = await db.execute(
       `
       SELECT 
@@ -77,11 +77,11 @@ const RiwayatModel = {
         ON ds.id_transaksi_setor = ts.id_transaksi_setor
       JOIN jenis_sampah_bank js
         ON ds.id_jenis_sampah = js.id_jenis_sampah
-      WHERE ts.id_transaksi_setor = ?
-         OR ts.referensi_transaksi = ?
+      WHERE (ts.id_transaksi_setor = ?
+         OR ts.referensi_transaksi = ?) AND ts.id_bank_sampah = ?
       GROUP BY ds.id_jenis_sampah
     `,
-      [root_id, root_id],
+      [root_id, root_id, id_bank_sampah],
     );
 
     return rows;

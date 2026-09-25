@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import TransferModel from "../models/transferModel.js";
 
 export const getTransferPinStatus = async (req, res) => {
@@ -49,8 +50,8 @@ export const createTransferPin = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    res.status(500).json({
-      message: err.message || "Gagal membuat PIN transaksi",
+    res.status(err.status || 500).json({
+      message: publicError(err) || "Gagal membuat PIN transaksi",
     });
   }
 };
@@ -77,7 +78,7 @@ export const getTransferRecipient = async (req, res) => {
       });
     }
 
-    if (penerima.id_nasabah === id_nasabah) {
+    if (String(penerima.id_nasabah) === String(id_nasabah)) {
       return res.status(400).json({
         message: "Tidak bisa transfer ke rekening sendiri",
       });
@@ -94,7 +95,7 @@ export const getTransferRecipient = async (req, res) => {
     console.error(err);
 
     res.status(500).json({
-      message: err.message || "Gagal mengambil data penerima transfer",
+      message: publicError(err) || "Gagal mengambil data penerima transfer",
     });
   }
 };
@@ -110,7 +111,7 @@ export const transferSaldo = async (req, res) => {
       });
     }
 
-    if (Number(nominal) <= 0) {
+    if (!Number.isFinite(Number(nominal)) || Number(nominal) <= 0) {
       return res.status(400).json({
         message: "Nominal transfer tidak valid",
       });
@@ -129,7 +130,7 @@ export const transferSaldo = async (req, res) => {
       });
     }
 
-    if (penerima.id_nasabah === id_nasabah) {
+    if (String(penerima.id_nasabah) === String(id_nasabah)) {
       return res.status(400).json({
         message: "Tidak bisa transfer ke rekening sendiri",
       });
@@ -139,22 +140,53 @@ export const transferSaldo = async (req, res) => {
       id_nasabah,
     };
 
-    await TransferModel.transferSaldo({
+    const data = await TransferModel.transferSaldo({
       pengirim,
       penerima,
       nominal: Number(nominal),
+      request_key: req.body.idempotency_key,
       id_bank_sampah,
     });
 
     res.json({
       success: true,
-      message: "Transfer berhasil",
+      message: data.status === "MENUNGGU" ? "Pengajuan transfer berhasil. Menunggu verifikasi admin." : "Pengajuan ini sudah diproses. Silakan periksa riwayat transfer.",
+      data,
     });
   } catch (err) {
     console.error(err);
 
     res.status(err.status || 500).json({
-      message: err.message || "Transfer gagal",
+      message: publicError(err) || "Transfer gagal",
     });
   }
+};
+
+export const listTransfers = async (req, res) => {
+  try {
+    res.json({ data: await TransferModel.listTransfers(req.user) });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: publicError(err) || "Gagal mengambil transfer" });
+  }
+};
+
+export const verifyTransfer = async (req, res) => {
+  try {
+    if (!/^\d+$/.test(req.params.id)) return res.status(400).json({ message: "ID transfer tidak valid" });
+    const data = await TransferModel.verifyTransfer({
+      id_transfer: req.params.id,
+      id_bank_sampah: req.user.id_bank_sampah,
+      admin_id: req.user.id_user,
+      status: req.body.status,
+      rejection_reason: req.body.rejection_reason,
+    });
+    res.json({ data, message: data.status === "DISETUJUI" ? "Transfer disetujui dan saldo telah dikirim" : "Transfer ditolak" });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: publicError(err) || "Gagal memverifikasi transfer" });
+  }
+};
+
+export const transferNotifications = async (req, res) => {
+  try { res.json({ data: await TransferModel.notifications(req.user) }); }
+  catch { res.status(500).json({ message: "Gagal mengambil notifikasi" }); }
 };

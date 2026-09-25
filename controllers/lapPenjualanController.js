@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import LaporanPenjualanModel from "../models/lapPenjualanModel.js";
 import db from "../config/db.js";
 import ExcelJS from "exceljs";
@@ -62,6 +63,257 @@ function getMonthPeriod(startMonth, endMonth) {
   };
 }
 
+function getYear(tahun) {
+  const selectedYear = Number(tahun);
+
+  if (!/^\d{4}$/.test(String(tahun || "")) || selectedYear < 1000) {
+    const error = new Error("Tahun tidak valid");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return selectedYear;
+}
+
+async function getAnnualReport(id_bank_sampah, tahun) {
+  const rows = await LaporanPenjualanModel.getLaporanTahunan(
+    id_bank_sampah,
+    tahun,
+  );
+  const data = Array.from({ length: 12 }, (_, index) => {
+    const bulan = index + 1;
+    const row = rows.find((item) => Number(item.bulan) === bulan);
+
+    return {
+      bulan,
+      nama_bulan: NAMA_BULAN[index],
+      jumlah_transaksi: Number(row?.jumlah_transaksi || 0),
+      total_penjualan: Number(row?.total_penjualan || 0),
+    };
+  });
+
+  return {
+    tahun,
+    jumlah_transaksi: data.reduce(
+      (total, item) => total + item.jumlah_transaksi,
+      0,
+    ),
+    total_penjualan: data.reduce(
+      (total, item) => total + item.total_penjualan,
+      0,
+    ),
+    data,
+  };
+}
+
+export const getLaporanPenjualanTahunan = async (req, res) => {
+  try {
+    const { id_bank_sampah } = req.user;
+    const tahun = getYear(req.query.tahun);
+    const data = await getAnnualReport(id_bank_sampah, tahun);
+
+    res.json(data);
+  } catch (error) {
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.statusCode ? publicError(error) : "Gagal ambil data" });
+  }
+};
+
+export const exportExcelPenjualanTahunan = async (req, res) => {
+  try {
+    const { id_bank_sampah } = req.user;
+    const tahun = getYear(req.query.tahun);
+    const [bank, data] = await Promise.all([
+      BankSampah.getById(id_bank_sampah),
+      getAnnualReport(id_bank_sampah, tahun),
+    ]);
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Laporan Tahunan");
+
+    sheet.mergeCells("A1:C1");
+    sheet.getCell("A1").value = bank?.nama_bank_sampah || "BANK SAMPAH";
+    sheet.mergeCells("A2:C2");
+    sheet.getCell("A2").value = bank?.alamat || "-";
+    sheet.mergeCells("A3:C3");
+    sheet.getCell("A3").value = "LAPORAN PENJUALAN TAHUNAN";
+    sheet.mergeCells("A4:C4");
+    sheet.getCell("A4").value = `Tahun: ${tahun}`;
+    sheet.addRow([]);
+    sheet.addRow(["Bulan", "Jumlah Transaksi", "Total Penjualan"]);
+    data.data.forEach((item) => {
+      sheet.addRow([
+        item.nama_bulan,
+        item.jumlah_transaksi,
+        item.total_penjualan,
+      ]);
+    });
+    sheet.addRow(["TOTAL", data.jumlah_transaksi, data.total_penjualan]);
+    sheet.addRow([]);
+    sheet.addRow([]);
+    sheet.mergeCells("C22:C22");
+    sheet.getCell("C22").value = `Padang, ${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}`;
+    sheet.getCell("C23").value = "Direktur Bank Sampah";
+    sheet.getCell("C27").value = "____________________";
+    sheet.columns = [{ width: 16 }, { width: 22 }, { width: 24 }];
+    sheet.getColumn(3).numFmt = '"Rp" #,##0';
+    ["A1", "A2", "A3", "A4"].forEach((cell) => {
+      sheet.getCell(cell).alignment = { horizontal: "center" };
+    });
+    sheet.getCell("A1").font = { bold: true, size: 14, color: { argb: "FF1A5276" } };
+    sheet.getCell("A3").font = { bold: true, size: 13 };
+    const headerRow = sheet.getRow(6);
+    headerRow.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    headerRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A5276" } };
+    headerRow.alignment = { horizontal: "center" };
+    const totalRow = sheet.getRow(19);
+    totalRow.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    totalRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A5276" } };
+    [22, 23, 27].forEach((row) => {
+      sheet.getCell(`C${row}`).alignment = { horizontal: "center" };
+    });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=laporan-penjualan-tahunan-${tahun}.xlsx`,
+    );
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.statusCode ? publicError(error) : "Gagal export excel" });
+  }
+};
+
+export const exportPdfPenjualanTahunan = async (req, res) => {
+  try {
+    const { id_bank_sampah } = req.user;
+    const tahun = getYear(req.query.tahun);
+    const [[bankRows], data] = await Promise.all([
+      db.execute(
+        "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
+        [id_bank_sampah],
+      ),
+      getAnnualReport(id_bank_sampah, tahun),
+    ]);
+    const bank = bankRows[0];
+    const doc = new PDFDocument({ margin: 45, size: "A4" });
+    const COLOR = {
+      primary: "#1a5276",
+      accent: "#2e86c1",
+      headerBg: "#1a5276",
+      headerText: "#ffffff",
+      rowAlt: "#eaf4fb",
+      rowOdd: "#ffffff",
+      border: "#aed6f1",
+      muted: "#7f8c8d",
+      dark: "#1c2833",
+      totalBg: "#1a5276",
+    };
+    const MARGIN = 45;
+    const TABLE_W = 505;
+    const columns = [MARGIN, MARGIN + 185, MARGIN + 345];
+    const widths = [185, 160, 160];
+    const fillRect = (x, y, width, height, color) => {
+      doc.save().rect(x, y, width, height).fill(color).restore();
+    };
+    const drawRow = (y, values, header = false, alternate = false) => {
+      values.forEach((value, index) => {
+        fillRect(
+          columns[index],
+          y,
+          widths[index],
+          22,
+          header ? COLOR.headerBg : alternate ? COLOR.rowAlt : COLOR.rowOdd,
+        );
+        doc.save().rect(columns[index], y, widths[index], 22).strokeColor(COLOR.border).lineWidth(0.5).stroke().restore();
+        doc
+          .fillColor(header ? COLOR.headerText : COLOR.dark)
+          .font(header ? "Helvetica-Bold" : "Helvetica")
+          .fontSize(9)
+          .text(String(value), columns[index] + 6, y + 7, {
+            width: widths[index] - 12,
+            align: index === 0 ? "left" : "right",
+          });
+      });
+    };
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=laporan-penjualan-tahunan-${tahun}.pdf`,
+    );
+    doc.pipe(res);
+
+    let yPos = 40;
+    const KOP_H = 60;
+    fillRect(MARGIN, yPos, TABLE_W, KOP_H, "#f0f7fc");
+    fillRect(MARGIN, yPos, 4, KOP_H, COLOR.primary);
+    if (bank?.logo_path) {
+      const logoPath = path.join(process.cwd(), bank.logo_path);
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, MARGIN + 12, yPos + 5, { height: 50 });
+      }
+    }
+    doc
+      .fillColor(COLOR.primary)
+      .font("Helvetica-Bold")
+      .fontSize(13)
+      .text(bank?.nama_bank_sampah || "BANK SAMPAH", MARGIN + 70, yPos + 10);
+    doc
+      .fillColor(COLOR.muted)
+      .font("Helvetica")
+      .fontSize(9)
+      .text(bank?.alamat || "-", MARGIN + 70, yPos + 28);
+    yPos += KOP_H + 6;
+    doc.save().moveTo(MARGIN, yPos).lineTo(MARGIN + TABLE_W, yPos).lineWidth(2).strokeColor(COLOR.accent).stroke().restore();
+    yPos += 3;
+    doc.save().moveTo(MARGIN, yPos).lineTo(MARGIN + TABLE_W, yPos).lineWidth(0.5).strokeColor(COLOR.border).stroke().restore();
+    yPos += 16;
+    doc.fillColor(COLOR.dark).font("Helvetica-Bold").fontSize(14).text("LAPORAN PENJUALAN TAHUNAN", MARGIN, yPos, { width: TABLE_W, align: "center" });
+    yPos += 19;
+    doc.fillColor(COLOR.muted).font("Helvetica").fontSize(9).text(`Tahun: ${tahun}`, MARGIN, yPos, { width: TABLE_W, align: "center" });
+    yPos += 20;
+    drawRow(yPos, ["Bulan", "Jumlah Transaksi", "Total Penjualan"], true);
+    yPos += 22;
+    data.data.forEach((item, index) => {
+      drawRow(yPos, [
+        item.nama_bulan,
+        item.jumlah_transaksi,
+        `Rp ${item.total_penjualan.toLocaleString("id-ID")}`,
+      ], false, index % 2 === 0);
+      yPos += 22;
+    });
+    fillRect(MARGIN, yPos, TABLE_W, 24, COLOR.totalBg);
+    doc.fillColor(COLOR.headerText).font("Helvetica-Bold").fontSize(9).text("TOTAL", MARGIN + 6, yPos + 8, { width: 173 });
+    doc.text(data.jumlah_transaksi.toLocaleString("id-ID"), columns[1] + 6, yPos + 8, { width: widths[1] - 12, align: "right" });
+    doc.text(`Rp ${data.total_penjualan.toLocaleString("id-ID")}`, columns[2] + 6, yPos + 8, { width: widths[2] - 12, align: "right" });
+    yPos += 54;
+    const ttdX = MARGIN + TABLE_W - 160;
+    doc.fillColor(COLOR.dark).font("Helvetica").fontSize(9).text(`Padang, ${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}`, ttdX, yPos, { width: 155, align: "center" });
+    yPos += 14;
+    doc.font("Helvetica-Bold").text("Direktur Bank Sampah", ttdX, yPos, { width: 155, align: "center" });
+    yPos += 50;
+    doc.save().moveTo(ttdX + 10, yPos).lineTo(ttdX + 145, yPos).lineWidth(1).strokeColor(COLOR.dark).stroke().restore();
+    yPos += 20;
+    doc.save().moveTo(MARGIN, yPos).lineTo(MARGIN + TABLE_W, yPos).lineWidth(0.5).strokeColor(COLOR.border).stroke().restore();
+    yPos += 8;
+    doc.font("Helvetica").fontSize(8).fillColor(COLOR.muted).text(`© ${new Date().getFullYear()} ${bank?.nama_bank_sampah || "Bank Sampah"} — Dokumen ini digenerate otomatis oleh sistem.`, MARGIN, yPos, { width: TABLE_W, align: "center" });
+    doc.end();
+  } catch (error) {
+    if (!res.headersSent) {
+      res
+        .status(error.statusCode || 500)
+        .json({ message: error.statusCode ? publicError(error) : "Gagal export pdf" });
+    }
+  }
+};
+
 export const getLaporanPenjualan = async (req, res) => {
   try {
     const { id_bank_sampah } = req.user;
@@ -93,7 +345,7 @@ export const getLaporanPenjualan = async (req, res) => {
   } catch (error) {
     res
       .status(error.statusCode || 500)
-      .json({ message: error.statusCode ? error.message : "Gagal ambil data" });
+      .json({ message: error.statusCode ? publicError(error) : "Gagal ambil data" });
   }
 };
 
@@ -150,7 +402,7 @@ export const exportExcelPenjualan = async (req, res) => {
   } catch (err) {
     res
       .status(err.statusCode || 500)
-      .json({ message: err.statusCode ? err.message : "Gagal export excel" });
+      .json({ message: err.statusCode ? publicError(err) : "Gagal export excel" });
   }
 };
 
@@ -669,7 +921,7 @@ export const exportPdfPenjualan = async (req, res) => {
       .fontSize(9)
       .fillColor(COLOR.dark)
       .text(
-        `${bank?.nama_bank_sampah || "Bank Sampah"}, ${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}`,
+        `Padang, ${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}`,
         ttdX,
         yPos,
         { width: 155, align: "center" },

@@ -1,14 +1,13 @@
+import crypto from "node:crypto";
+import { consumeResetToken } from "../models/resetPasswordModel.js";
 import bcrypt from "bcryptjs";
 
 import {
   findUserByEmail,
   deleteOldResetToken,
   saveResetToken,
-  verifyResetToken,
-  updatePassword,
-  deleteResetTokenAfterUsed,
 } from "../models/resetPasswordModel.js";
-import nodemailer from "nodemailer";
+import { sendEmail } from "../services/emailService.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -39,32 +38,12 @@ export const requestResetPassword = async (req, res) => {
       });
     }
 
-    // cek akun aktif
-    if (!user.status_aktif) {
-      return res.status(403).json({
-        success: false,
-        message: "Akun tidak aktif",
-      });
-    }
-
-    // cek status akun
-    if (user.status_akun !== "aktif") {
-      return res.status(403).json({
-        success: false,
-        message: "Akun belum aktif",
-      });
-    }
-
-    // cek email verified
-    if (!user.email_verified_at) {
-      return res.status(403).json({
-        success: false,
-        message: "Email belum diverifikasi",
-      });
+    if (!user.status_aktif || user.status_akun !== "aktif" || !user.email_verified_at) {
+      return res.status(200).json({ success: true, message: "Jika email terdaftar, OTP akan dikirim" });
     }
 
     // generate OTP 6 digit
-    const token = Math.floor(100000 + Math.random() * 900000).toString();
+    const token = crypto.randomInt(100000, 1000000).toString();
 
     // expired 15 menit
     const expired_at = new Date(Date.now() + 15 * 60 * 1000);
@@ -81,16 +60,7 @@ export const requestResetPassword = async (req, res) => {
 
     // TODO:
     // kirim OTP ke email user
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Bank Sampah" <${process.env.EMAIL_USER}>`,
+    await sendEmail({
       to: email,
       subject: "Reset Password - OTP Verification",
 
@@ -205,30 +175,9 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    // verify token
-    const validToken = await verifyResetToken({
-      email,
-      token,
-    });
-
-    if (!validToken) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP tidak valid atau expired",
-      });
-    }
-
-    // hash password baru
     const password_hash = await bcrypt.hash(password, 10);
-
-    // update password
-    await updatePassword({
-      email,
-      password_hash,
-    });
-
-    // hapus token setelah dipakai
-    await deleteResetTokenAfterUsed(email);
+    const consumed = await consumeResetToken({ email, token, password_hash });
+    if (!consumed) return res.status(400).json({ message: "OTP tidak valid atau expired" });
 
     return res.status(200).json({
       success: true,

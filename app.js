@@ -1,3 +1,5 @@
+import db from "./config/db.js";
+import { securityHeaders, auditRequests, rateLimit, validateInput } from "./middlewares/security.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -39,6 +41,12 @@ import pengeluaranRoutes from "./routes/pengeluaranRoutes.js";
 import adminNasabahAccountRoutes from "./routes/adminNasabahAccountRoutes.js";
 
 const app = express();
+app.disable("x-powered-by");
+// Set only to trusted proxy IPs/CIDRs in deployments behind a reverse proxy.
+if (process.env.TRUSTED_PROXIES) app.set("trust proxy", process.env.TRUSTED_PROXIES.split(",").map(s => s.trim()));
+app.use(securityHeaders);
+app.use(auditRequests);
+app.use("/api", rateLimit("api-ip", 600, 60));
 
 /**
  * ✅ CORS CONFIG (FIX UTAMA)
@@ -50,7 +58,7 @@ const allowedOrigins = [
   "https://banksampah.dlh.padang.go.id", // frontend production
   "http://localhost:5173",
   "http://localhost:8081",
-];
+].filter(origin => env !== "production" || origin.startsWith("https://"));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,7 +78,8 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "100kb" }));
+app.use(validateInput);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /**
@@ -119,12 +128,17 @@ app.use((err, req, res, next) => {
     });
   }
 
-  next(err);
+  res.status(500).json({ message: "Terjadi kesalahan server" });
 });
 
 /**
  * START SERVER
  */
+const cleanup = setInterval(() => {
+  db.query("DELETE FROM security_rate_limits WHERE expires_at < NOW() LIMIT 10000")
+    .catch(() => console.error("security_rate_limit_cleanup_failed"));
+}, 60 * 60 * 1000);
+cleanup.unref();
 const PORT = config.app.port;
 
 app.listen(PORT, () => {

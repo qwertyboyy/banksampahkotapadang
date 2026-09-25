@@ -517,7 +517,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       .fontSize(9)
       .fillColor(COLOR.dark)
       .text(
-        ` Padang, ${new Date().toLocaleDateString("id-ID", {
+        `Padang, ${new Date().toLocaleDateString("id-ID", {
           day: "2-digit",
           month: "long",
           year: "numeric",
@@ -549,22 +549,6 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       .strokeColor(COLOR.dark)
       .stroke()
       .restore();
-
-    yPos += 14;
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(9)
-      .fillColor(COLOR.dark)
-      .text(
-        `Bank Sampah ${bank?.nama_bank_sampah || "Bank Sampah"}`,
-        ttdX,
-        yPos,
-        {
-          width: 155,
-          align: "center",
-        },
-      );
 
     doc.end();
   } catch (err) {

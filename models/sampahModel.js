@@ -59,24 +59,24 @@ export const createJenis = async (data) => {
   );
 };
 
-export const updateJenis = async (id, data) => {
+export const updateJenis = async (id, data, id_bank_sampah) => {
   const { id_kategori, nama_jenis, harga_per_kg, status_aktif } = data;
 
   return db.query(
     `UPDATE jenis_sampah_bank
      SET id_kategori = ?, nama_jenis = ?, harga_per_kg = ?, status_aktif = ?
-     WHERE id_jenis_sampah = ?`,
-    [id_kategori, nama_jenis, harga_per_kg, status_aktif, id],
+     WHERE id_jenis_sampah = ? AND id_bank_sampah = ?`,
+    [id_kategori, nama_jenis, harga_per_kg, status_aktif, id, id_bank_sampah],
   );
 };
 
 // SOFT DELETE
-export const deleteJenis = async (id) => {
+export const deleteJenis = async (id, id_bank_sampah) => {
   return db.query(
     `UPDATE jenis_sampah_bank
      SET status_aktif = 0
-     WHERE id_jenis_sampah = ?`,
-    [id],
+     WHERE id_jenis_sampah = ? AND id_bank_sampah = ?`,
+    [id, id_bank_sampah],
   );
 };
 

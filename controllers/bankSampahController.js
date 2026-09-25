@@ -1,9 +1,10 @@
+import { publicError } from "../middlewares/security.js";
 import BankSampah from "../models/bankSampahModel.js";
 
 export const getBankSampah = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const search = req.query.search || "";
 
     const result = await BankSampah.getAll(page, limit, search);
@@ -135,6 +136,6 @@ export const updateSettingBankSampah = async (req, res) => {
     res.json({ message: "Berhasil update" });
   } catch (err) {
     console.error("ERROR UPDATE:", err); // 🔥 ini penting
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };

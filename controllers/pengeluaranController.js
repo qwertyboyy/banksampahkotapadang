@@ -73,7 +73,7 @@ export const createPengeluaran = async (req, res) => {
       });
     }
 
-    if (Number(nominal) <= 0) {
+    if (!Number.isFinite(Number(nominal)) || Number(nominal) <= 0) {
       return res.status(400).json({
         success: false,
         message: "Nominal harus lebih dari 0",
@@ -145,7 +145,7 @@ export const updatePengeluaran = async (req, res) => {
       });
     }
 
-    if (Number(nominal) <= 0) {
+    if (!Number.isFinite(Number(nominal)) || Number(nominal) <= 0) {
       return res.status(400).json({
         success: false,
         message: "Nominal harus lebih dari 0",

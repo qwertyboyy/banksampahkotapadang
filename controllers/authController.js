@@ -1,14 +1,13 @@
+import { publicError } from "../middlewares/security.js";
+import { hashToken } from "../middlewares/security.js";
 import {
-  findUserByUsername,
-  findUserByEmail,
-  createUser,
   loginUser,
 } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import { sendEmail } from "../services/emailService.js";
 import pool from "../config/db.js";
 import NasabahModel from "../models/nasabahModel.js";
 
@@ -42,7 +41,7 @@ export const login = async (req, res) => {
     }
 
     // 🔥 CEK STATUS AKUN
-    if (user.status_akun !== "aktif") {
+    if (user.status_akun !== "aktif" || Number(user.status_aktif) !== 1) {
       return res.status(403).json({
         message: "Akun belum diverifikasi admin",
       });
@@ -50,6 +49,7 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(
       {
+        session_version: Number(user.session_version),
         id_user: user.id_user,
         role: user.role,
         id_bank_sampah: user.id_bank_sampah,
@@ -76,151 +76,10 @@ export const login = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(err.status || 500).json({ message: err.status ? publicError(err) : "Internal Server Error" });
   }
 };
 // POST /api/auth/register
-export const register = async (req, res) => {
-  const conn = await pool.getConnection();
-
-  try {
-    await conn.beginTransaction();
-
-    const {
-      nama_lengkap,
-      username,
-      email,
-      password,
-      role,
-      id_bank_sampah,
-
-      is_existing_nasabah,
-      nomor_rekening,
-      nik,
-      alamat,
-      no_hp,
-    } = req.body;
-
-    /* ================= VALIDASI ================= */
-
-    if (!nama_lengkap || !username || !password || !role) {
-      throw new Error("Data wajib belum lengkap");
-    }
-
-    if (await findUserByUsername(username)) {
-      throw new Error("Username sudah dipakai");
-    }
-
-    if (email && (await findUserByEmail(email))) {
-      throw new Error("Email sudah dipakai");
-    }
-
-    const password_hash = await bcrypt.hash(password, 10);
-
-    let id_nasabah_final = null;
-    let nomor_rekening_final = null; // 🔥 tambahan penting
-
-    /* ================= KHUSUS NASABAH ================= */
-
-    if (role === "nasabah") {
-      if (!id_bank_sampah) {
-        throw new Error("Nasabah wajib punya bank sampah");
-      }
-
-      // 🔥 CASE 1: NASABAH SUDAH ADA
-      if (is_existing_nasabah) {
-        if (!nomor_rekening) {
-          throw new Error("Nomor rekening wajib diisi");
-        }
-
-        const [rows] = await conn.query(
-          `SELECT id_nasabah, nomor_rekening
-           FROM nasabah 
-           WHERE nomor_rekening = ? AND id_bank_sampah = ?
-           LIMIT 1`,
-          [nomor_rekening, id_bank_sampah],
-        );
-
-        if (!rows.length) {
-          throw new Error("Data nasabah tidak ditemukan");
-        }
-
-        id_nasabah_final = rows[0].id_nasabah;
-        nomor_rekening_final = rows[0].nomor_rekening;
-      }
-
-      // 🔥 CASE 2: NASABAH BARU
-      else {
-        const rekening = await NasabahModel.generateNomorRekening(
-          conn,
-          id_bank_sampah,
-        );
-
-        const [result] = await conn.query(
-          `INSERT INTO nasabah
-           (id_bank_sampah, nomor_urut, nomor_rekening, nama_nasabah, nik, alamat, no_hp, saldo)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
-          [
-            id_bank_sampah,
-            rekening.nomor_urut,
-            rekening.nomor_rekening,
-            nama_lengkap,
-            nik,
-            alamat,
-            no_hp,
-          ],
-        );
-
-        await NasabahModel.updateCounterNasabah(
-          conn,
-          id_bank_sampah,
-          rekening.nomor_urut,
-        );
-
-        id_nasabah_final = result.insertId;
-        nomor_rekening_final = rekening.nomor_rekening; // 🔥 simpan hasil generate
-      }
-    }
-
-    /* ================= CREATE USER ================= */
-
-    const id_user = await createUser(conn, {
-      nama_lengkap,
-      email,
-      username,
-      password_hash,
-      role,
-      id_bank_sampah,
-      id_nasabah: id_nasabah_final,
-    });
-
-    await conn.commit();
-
-    res.status(201).json({
-      success: true,
-      message: "Register berhasil",
-      user: {
-        id_user,
-        username,
-        role,
-        id_bank_sampah,
-        id_nasabah: id_nasabah_final,
-        nomor_rekening: nomor_rekening_final, // 🔥 INI YANG LU BUTUH
-      },
-    });
-  } catch (err) {
-    await conn.rollback();
-    console.error("ERROR REGISTER:", err);
-
-    res.status(400).json({
-      success: false,
-      message: err.message,
-    });
-  } finally {
-    conn.release();
-  }
-};
-
 export const checkNasabah = async (req, res) => {
   try {
     const { nomor_rekening, id_bank_sampah } = req.body;
@@ -228,7 +87,7 @@ export const checkNasabah = async (req, res) => {
     const [rows] = await pool.query(
       `SELECT id_nasabah, nama_nasabah 
        FROM nasabah 
-       WHERE nomor_rekening = ? AND id_bank_sampah = ?`,
+       WHERE nomor_rekening = ? AND id_bank_sampah = ? AND status_aktif = 1 FOR UPDATE`,
       [nomor_rekening, id_bank_sampah],
     );
 
@@ -239,7 +98,7 @@ export const checkNasabah = async (req, res) => {
     const id_nasabah = rows[0].id_nasabah;
 
     const [user] = await pool.query(
-      `SELECT id_user FROM users WHERE id_nasabah = ?`,
+      `SELECT id_user FROM users WHERE id_nasabah = ? FOR UPDATE`,
       [id_nasabah],
     );
 
@@ -249,23 +108,24 @@ export const checkNasabah = async (req, res) => {
 
     res.json({
       message: "Nasabah ditemukan",
-      data: rows[0],
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
 export const verifyOtp = async (req, res) => {
   try {
     const { email, token } = req.body;
+    if (typeof email !== "string" || !/^\d{6}$/.test(String(token))) return res.status(400).json({ message: "OTP tidak valid" });
 
     const [rows] = await pool.query(
       `SELECT * FROM verification_tokens
        WHERE email = ?
        AND token = ?
+       AND purpose = 'register'
        AND expired_at > NOW()`,
-      [email, token],
+      [email, hashToken(token)],
     );
 
     if (!rows.length) {
@@ -276,13 +136,13 @@ export const verifyOtp = async (req, res) => {
       `UPDATE verification_tokens
        SET verified = 1
        WHERE email = ?
-       AND token = ?`,
-      [email, token],
+       AND token = ? AND purpose = 'register'`,
+      [email, hashToken(token)],
     );
 
     res.json({ message: "OTP valid" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -324,8 +184,9 @@ export const registerFinal = async (req, res) => {
    WHERE email = ?
    AND purpose = 'register'
    AND verified = 1
-   AND expired_at > NOW()`,
-      [email],
+   AND token = ?
+   AND expired_at > NOW() FOR UPDATE`,
+      [email, hashToken(req.body.token || '')],
     );
 
     if (!otpCheck.length) {
@@ -345,7 +206,7 @@ export const registerFinal = async (req, res) => {
       const [rows] = await conn.query(
         `SELECT id_nasabah 
          FROM nasabah 
-         WHERE nomor_rekening = ? AND id_bank_sampah = ?`,
+         WHERE nomor_rekening = ? AND id_bank_sampah = ? AND status_aktif = 1 FOR UPDATE`,
         [nomor_rekening, id_bank_sampah],
       );
 
@@ -357,7 +218,7 @@ export const registerFinal = async (req, res) => {
 
       // 🔥 CEK SUDAH PUNYA AKUN
       const [userCheck] = await conn.query(
-        `SELECT id_user FROM users WHERE id_nasabah = ?`,
+        `SELECT id_user FROM users WHERE id_nasabah = ? FOR UPDATE`,
         [id_nasabah],
       );
 
@@ -410,10 +271,7 @@ export const registerFinal = async (req, res) => {
     let status_akun = "pending";
     let status_aktif = 0;
 
-    if (is_existing_nasabah) {
-      status_akun = "aktif";
-      status_aktif = 1;
-    }
+
 
     const [resultUser] = await conn.query(
       `INSERT INTO users 
@@ -453,14 +311,12 @@ export const registerFinal = async (req, res) => {
     await conn.commit();
 
     res.status(201).json({
-      message: is_existing_nasabah
-        ? "Registrasi berhasil! Akun langsung aktif."
-        : "Registrasi berhasil, menunggu verifikasi admin",
+      message: "Registrasi berhasil, menunggu verifikasi admin",
       id_user: resultUser.insertId,
     });
   } catch (err) {
     await conn.rollback();
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: publicError(err) });
   } finally {
     conn.release();
   }
@@ -473,7 +329,7 @@ export const approveUser = async (req, res) => {
 
     // 🔥 ambil user target
     const [rows] = await pool.query(
-      `SELECT id_user, id_bank_sampah FROM users WHERE id_user = ?`,
+      `SELECT id_user, id_bank_sampah, role FROM users WHERE id_user = ?`,
       [id_user],
     );
 
@@ -484,7 +340,7 @@ export const approveUser = async (req, res) => {
     const targetUser = rows[0];
 
     // 🔥 CEK TENANT
-    if (role === "admin_bank" && targetUser.id_bank_sampah !== id_bank_sampah) {
+    if (role === "admin_bank" && (String(targetUser.id_bank_sampah) !== String(id_bank_sampah) || targetUser.role !== "nasabah")) {
       return res.status(403).json({
         message: "Tidak punya akses ke user ini",
       });
@@ -493,14 +349,14 @@ export const approveUser = async (req, res) => {
     //buat approve
     await pool.query(
       `UPDATE users 
-       SET status_akun = 'aktif', status_aktif = 1 
+       SET session_version = session_version + 1, status_akun = 'aktif', status_aktif = 1 
        WHERE id_user = ?`,
       [id_user],
     );
 
     res.json({ message: "User berhasil di-approve" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -510,7 +366,7 @@ export const rejectUser = async (req, res) => {
     const { id_bank_sampah, role } = req.user;
 
     const [rows] = await pool.query(
-      `SELECT id_user, id_bank_sampah FROM users WHERE id_user = ?`,
+      `SELECT id_user, id_bank_sampah, role FROM users WHERE id_user = ?`,
       [id_user],
     );
 
@@ -520,7 +376,7 @@ export const rejectUser = async (req, res) => {
 
     const targetUser = rows[0];
 
-    if (role === "admin_bank" && targetUser.id_bank_sampah !== id_bank_sampah) {
+    if (role === "admin_bank" && (String(targetUser.id_bank_sampah) !== String(id_bank_sampah) || targetUser.role !== "nasabah")) {
       return res.status(403).json({
         message: "Tidak punya akses ke user ini",
       });
@@ -528,14 +384,14 @@ export const rejectUser = async (req, res) => {
 
     await pool.query(
       `UPDATE users 
-       SET status_akun = 'ditolak', status_aktif = 0 
+       SET session_version = session_version + 1, status_akun = 'ditolak', status_aktif = 0 
        WHERE id_user = ?`,
       [id_user],
     );
 
     res.json({ message: "User ditolak" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -571,19 +427,10 @@ export const sendOtp = async (req, res) => {
     await pool.query(
       `INSERT INTO verification_tokens (email, token, purpose, expired_at)
        VALUES (?, ?, 'register', ?)`,
-      [email, token, expired],
+      [email, hashToken(token), expired],
     );
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await sendEmail({
       to: email,
       subject: "Kode OTP",
       html: `
@@ -702,6 +549,11 @@ export const getPendingUsers = async (req, res) => {
 
     res.json(rows);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
+};
+
+export const logout = async (req, res) => {
+  await pool.query("UPDATE users SET session_version = session_version + 1 WHERE id_user = ?", [req.user.id_user]);
+  res.json({ message: "Sesi telah diakhiri" });
 };

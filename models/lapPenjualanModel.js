@@ -97,6 +97,26 @@ const LaporanPenjualanModel = {
 
     return rows;
   },
+
+  getLaporanTahunan: async (id_bank_sampah, tahun) => {
+    const [rows] = await db.execute(
+      `
+      SELECT
+        YEAR(tanggal) AS tahun,
+        MONTH(tanggal) AS bulan,
+        COUNT(id_penjualan) AS jumlah_transaksi,
+        COALESCE(SUM(total_harga), 0) AS total_penjualan
+      FROM transaksi_jual
+      WHERE id_bank_sampah = ?
+        AND YEAR(tanggal) = ?
+      GROUP BY YEAR(tanggal), MONTH(tanggal)
+      ORDER BY MONTH(tanggal)
+      `,
+      [id_bank_sampah, tahun],
+    );
+
+    return rows;
+  },
 };
 
 export default LaporanPenjualanModel;

@@ -9,16 +9,16 @@ import {
   exportPdfHargaSampah,
 } from "../controllers/sampahController.js";
 
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getJenis);
-router.get("/kategori", authMiddleware, getKategori);
-router.get("/laporan/pdf", authMiddleware, exportPdfHargaSampah);
-router.post("/", authMiddleware, createJenis);
-router.put("/:id", authMiddleware, updateJenis);
-router.delete("/:id", authMiddleware, deleteJenis);
-router.get("/select", authMiddleware, getJenisSelectController);
+router.get("/", authMiddleware, roleMiddleware("admin_bank", "nasabah"), getJenis);
+router.get("/kategori", authMiddleware, roleMiddleware("admin_bank"), getKategori);
+router.get("/laporan/pdf", authMiddleware, roleMiddleware("admin_bank"), exportPdfHargaSampah);
+router.post("/", authMiddleware, roleMiddleware("admin_bank"), createJenis);
+router.put("/:id", authMiddleware, roleMiddleware("admin_bank"), updateJenis);
+router.delete("/:id", authMiddleware, roleMiddleware("admin_bank"), deleteJenis);
+router.get("/select", authMiddleware, roleMiddleware("admin_bank"), getJenisSelectController);
 
 export default router;

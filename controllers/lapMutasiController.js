@@ -1,3 +1,4 @@
+import { publicError } from "../middlewares/security.js";
 import * as mutasiModel from "../models/lapMutasiModel.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
@@ -96,7 +97,7 @@ export const exportExcel = async (req, res) => {
     res.end();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: publicError(err) });
   }
 };
 
@@ -518,7 +519,11 @@ export const exportPDF = async (req, res) => {
     doc
       .font("Helvetica")
       .fontSize(9)
-      .text(`Padang, ${new Date().toLocaleDateString("id-ID")}`, ttdX, yPos, {
+      .text(`Padang, ${new Date().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      })}`, ttdX, yPos, {
         width: 160,
         align: "center",
       });
@@ -532,16 +537,20 @@ export const exportPDF = async (req, res) => {
 
     yPos += 70;
 
-    doc.font("Helvetica-Bold").text("(____________________)", ttdX, yPos, {
-      width: 160,
-      align: "center",
-    });
+    doc
+      .save()
+      .moveTo(ttdX + 10, yPos)
+      .lineTo(ttdX + 150, yPos)
+      .lineWidth(1)
+      .strokeColor(COLOR.dark)
+      .stroke()
+      .restore();
 
     doc.end();
   } catch (err) {
     console.error(err);
     res.status(500).json({
-      message: err.message,
+      message: publicError(err),
     });
   }
 };

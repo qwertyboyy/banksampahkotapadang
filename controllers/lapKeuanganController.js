@@ -142,6 +142,7 @@ export async function bulanan(req, res) {
  * Query params:
  *  - mode=harian, tanggal=YYYY-MM-DD
  *  - mode=bulanan, bulan=1-12, tahun=YYYY
+ *  - mode=tahunan, tahun=YYYY
  *  - id_bank_sampah
  */
 export async function cetak(req, res) {
@@ -154,11 +155,41 @@ export async function cetak(req, res) {
         .status(400)
         .json({ success: false, message: "id_bank_sampah wajib diisi" });
     }
-    if (!["harian", "bulanan"].includes(mode)) {
+    if (!["harian", "bulanan", "tahunan"].includes(mode)) {
       return res.status(400).json({
         success: false,
-        message: 'Parameter mode harus "harian" atau "bulanan"',
+        message: 'Parameter mode harus "harian", "bulanan", atau "tahunan"',
       });
+    }
+
+    if (mode === "tahunan") {
+      const tahun = parseInt(req.query.tahun, 10);
+      if (!tahun || tahun < 2000 || tahun > 2100) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Parameter tahun tidak valid" });
+      }
+
+      const laporan = await lapKeuanganModel.getLaporanTahunan(
+        id_bank_sampah,
+        tahun,
+      );
+      const tanggalCetak = formatTanggalPanjang(new Date());
+      const namaFile = `laporan-keuangan-tahunan-${tahun}.pdf`;
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="${namaFile}"`);
+
+      const doc = new PDFDocument({ size: "A4", margin: 45 });
+      doc.pipe(res);
+      renderLaporanKeuanganTahunanPDF(doc, {
+        ...laporan,
+        tahun,
+        tanggalCetak,
+        kotaTandaTangan: "Padang",
+      });
+      doc.end();
+      return;
     }
 
     let startDate;
@@ -668,17 +699,160 @@ function drawTandaTangan(doc, laporan, startY, pageWidth, marginLeft) {
     .strokeColor(COLOR.dark)
     .stroke()
     .restore();
+}
 
-  y += 14;
+function renderLaporanKeuanganTahunanPDF(doc, laporan) {
+  const marginLeft = doc.page.margins.left;
+  const pageWidth =
+    doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  let y = doc.page.margins.top;
 
+  const KOP_H = 60;
+  fillRect(doc, marginLeft, y, pageWidth, KOP_H, "#f0f7fc");
+  fillRect(doc, marginLeft, y, 4, KOP_H, COLOR.primary);
+  if (laporan.bankSampah?.logoPath) {
+    const logoFullPath = path.join(process.cwd(), laporan.bankSampah.logoPath);
+    if (fs.existsSync(logoFullPath)) {
+      doc.image(logoFullPath, marginLeft + 12, y + 5, { height: 50 });
+    }
+  }
   doc
     .font("Helvetica-Bold")
+    .fontSize(13)
+    .fillColor(COLOR.primary)
+    .text(laporan.bankSampah.nama, marginLeft + 70, y + 10, {
+      width: pageWidth - 80,
+    });
+  doc
+    .font("Helvetica")
     .fontSize(9)
+    .fillColor(COLOR.muted)
+    .text(laporan.bankSampah.alamat, marginLeft + 70, y + 28, {
+      width: pageWidth - 80,
+    });
+
+  y += KOP_H + 8;
+  doc
+    .moveTo(marginLeft, y)
+    .lineTo(marginLeft + pageWidth, y)
+    .lineWidth(2)
+    .strokeColor(COLOR.accent)
+    .stroke();
+  y += 18;
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(14)
     .fillColor(COLOR.dark)
-    .text(`Bank Sampah ${laporan.bankSampah.nama || "Bank Sampah"}`, ttdX, y, {
-      width: 155,
+    .text("LAPORAN KEUANGAN TAHUNAN", marginLeft, y, {
+      width: pageWidth,
       align: "center",
     });
+  y += 18;
+  doc
+    .font("Helvetica")
+    .fontSize(10)
+    .text(`TAHUN ${laporan.tahun}`, marginLeft, y, {
+      width: pageWidth,
+      align: "center",
+    });
+  y += 26;
+
+  const widths = [65, 88, 88, 88, 88, 88];
+  const labels = [
+    "Bulan",
+    "Penjualan",
+    "Setoran",
+    "Penarikan",
+    "Pengeluaran",
+    "Laba Bersih",
+  ];
+  const xPos = [];
+  widths.reduce((x, width) => {
+    xPos.push(x);
+    return x + width;
+  }, marginLeft);
+  const rowHeight = 24;
+  const drawRowBorder = (rowY) => {
+    doc.save().strokeColor(COLOR.border).lineWidth(0.5);
+    doc.rect(marginLeft, rowY, pageWidth, rowHeight).stroke();
+    xPos.slice(1).forEach((x) =>
+      doc
+        .moveTo(x, rowY)
+        .lineTo(x, rowY + rowHeight)
+        .stroke(),
+    );
+    doc.restore();
+  };
+
+  fillRect(doc, marginLeft, y, pageWidth, rowHeight, COLOR.headerBg);
+  doc.font("Helvetica-Bold").fontSize(7.5).fillColor(COLOR.headerText);
+  labels.forEach((label, index) => {
+    doc.text(label, xPos[index] + 3, y + 8, {
+      width: widths[index] - 15,
+      align: "center",
+    });
+  });
+  drawRowBorder(y);
+  y += rowHeight;
+
+  laporan.rincian.forEach((item, index) => {
+    fillRect(
+      doc,
+      marginLeft,
+      y,
+      pageWidth,
+      rowHeight,
+      index % 2 === 0 ? COLOR.rowOdd : COLOR.rowAlt,
+    );
+    const values = [
+      NAMA_BULAN[index],
+      formatAngka(item.penjualan),
+      formatAngka(item.setoran),
+      formatAngka(item.pencairan),
+      formatAngka(item.pengeluaran),
+      formatAngka(item.laba),
+    ];
+    doc.font("Helvetica").fontSize(7.5).fillColor(COLOR.dark);
+    values.forEach((value, colIndex) => {
+      doc.text(value, xPos[colIndex] + 3, y + 8, {
+        width: widths[colIndex] - 6,
+        align: "left",
+      });
+    });
+    drawRowBorder(y);
+    y += rowHeight;
+  });
+
+  const totals = laporan.rincian.reduce(
+    (acc, item) => ({
+      penjualan: acc.penjualan + item.penjualan,
+      setoran: acc.setoran + item.setoran,
+      pencairan: acc.pencairan + item.pencairan,
+      pengeluaran: acc.pengeluaran + item.pengeluaran,
+      laba: acc.laba + item.laba,
+    }),
+    { penjualan: 0, setoran: 0, pencairan: 0, pengeluaran: 0, laba: 0 },
+  );
+  fillRect(doc, marginLeft, y, pageWidth, rowHeight, COLOR.totalBg);
+  const totalValues = [
+    "TOTAL",
+    formatAngka(totals.penjualan),
+    formatAngka(totals.setoran),
+    formatAngka(totals.pencairan),
+    formatAngka(totals.pengeluaran),
+    formatAngka(totals.laba),
+  ];
+  doc.font("Helvetica-Bold").fontSize(7.5).fillColor(COLOR.primary);
+  totalValues.forEach((value, index) => {
+    doc.text(value, xPos[index] + 3, y + 8, {
+      width: widths[index] - 6,
+      align: index === 0 ? "left" : "right",
+    });
+  });
+  drawRowBorder(y);
+  y += rowHeight + 34;
+
+  drawTandaTangan(doc, laporan, y, pageWidth, marginLeft);
 }
 
 export async function detail(req, res) {

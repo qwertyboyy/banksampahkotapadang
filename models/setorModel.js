@@ -14,9 +14,11 @@ export const createSetor = async (data) => {
     let totalNilai = 0;
 
     for (const item of items) {
+      if (!Number.isFinite(Number(item.berat)) || Number(item.berat) <= 0) throw new Error("Berat tidak valid");
+      item.berat = Number(item.berat);
       const [jenis] = await conn.query(
-        "SELECT harga_per_kg FROM jenis_sampah_bank WHERE id_jenis_sampah = ?",
-        [item.id_jenis_sampah],
+        "SELECT harga_per_kg FROM jenis_sampah_bank WHERE id_jenis_sampah = ? AND id_bank_sampah = ? AND status_aktif = 1",
+        [item.id_jenis_sampah, id_bank_sampah],
       );
 
       if (!jenis.length) throw new Error("Jenis sampah tidak ditemukan");
@@ -51,8 +53,8 @@ export const createSetor = async (data) => {
 
     // 🔥 4. Lock saldo nasabah
     const [nasabahRows] = await conn.query(
-      `SELECT saldo FROM nasabah WHERE id_nasabah = ? FOR UPDATE`,
-      [id_nasabah],
+      `SELECT saldo FROM nasabah WHERE id_nasabah = ? AND id_bank_sampah = ? AND status_aktif = 1 FOR UPDATE`,
+      [id_nasabah, id_bank_sampah],
     );
 
     if (!nasabahRows.length) throw new Error("Nasabah tidak ditemukan");
