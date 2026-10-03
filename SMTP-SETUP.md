@@ -1,7 +1,11 @@
 # SMTP OTP melalui Zimbra Padang
 
 OTP registrasi dan reset password memakai backend/services/emailService.js.
-Konfigurasi development, staging, dan production disiapkan untuk akun domain resmi pada mail.padang.go.id port 587 STARTTLS.
+SMTP Padang dinonaktifkan sementara. OTP registrasi dan reset password kembali memakai akun Gmail sebelumnya melalui `EMAIL_USER` dan `EMAIL_PASS`, dengan host default `smtp.gmail.com` port 465 SSL. Pengirim dan reply-to mengikuti `EMAIL_USER`.
+
+Konfigurasi SMTP Padang di `.env.development`, `.env.staging`, dan `.env.production` disimpan sebagai komentar. Restart backend setelah perubahan. Untuk server VPS, terapkan perubahan environment yang sama di server, karena file environment lokal tidak otomatis tersalin ke VPS.
+
+Untuk mengaktifkan SMTP Padang kembali, aktifkan baris konfigurasi berikut pada environment yang digunakan.
 
 Isi **password SMTP baru yang sudah dirotasi** langsung pada SMTP_PASS di backend/.env.development untuk uji lokal dan backend/.env.production pada VPS. Jangan kirim password lewat chat atau commit ke Git.
 
