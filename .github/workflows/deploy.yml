@@ -16,8 +16,27 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          debug: true
           script: |
+            set -e
+
+            whoami
+            hostname
+
             cd /var/www/banksampahkotapadang
+
+            echo "=== Pull latest code ==="
             git pull origin main
-            npm ci
+
+            echo "=== Install dependencies ==="
+            npm ci --include=optional
+
+            echo "=== Restart PM2 ==="
             pm2 restart banksampah
+
+            echo "=== Current commit ==="
+            git log -1 --oneline
+
+            echo "=== PM2 status ==="
+            pm2 status
