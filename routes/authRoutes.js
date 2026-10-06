@@ -2,6 +2,7 @@ import { sensitiveLimits, otpSendLimits, passwordPolicy } from "../middlewares/s
 import express from "express";
 import {
   login,
+  refreshMobileSession,
   logout,
   checkNasabah,
   sendOtp,
@@ -11,13 +12,14 @@ import {
   approveUser,
   rejectUser,
 } from "../controllers/authController.js";
-import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, mobileRefreshMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 /* ================= AUTH ================= */
 router.post("/logout", authMiddleware, logout);
 router.post("/login", ...sensitiveLimits, login);
+router.post("/mobile-refresh", ...sensitiveLimits, mobileRefreshMiddleware, refreshMobileSession);
 
 /* ================= REGISTER FLOW BARU ================= */
 

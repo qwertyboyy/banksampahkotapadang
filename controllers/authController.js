@@ -13,6 +13,24 @@ import NasabahModel from "../models/nasabahModel.js";
 
 dotenv.config();
 
+const mobileRefreshToken = (user) => jwt.sign({
+  id_user: user.id_user,
+  session_version: Number(user.session_version),
+  token_type: "mobile_refresh",
+}, process.env.JWT_SECRET, { expiresIn: "90d", algorithm: "HS256" });
+
+export const refreshMobileSession = (req, res) => {
+  const user = req.user;
+  const token = jwt.sign({
+    id_user: user.id_user,
+    session_version: Number(user.session_version),
+    role: user.role,
+    id_bank_sampah: user.id_bank_sampah,
+    id_nasabah: user.id_nasabah,
+  }, process.env.JWT_SECRET, { expiresIn: "1h", algorithm: "HS256" });
+  res.json({ token, refreshToken: mobileRefreshToken(user) });
+};
+
 // POST /api/auth/login
 export const login = async (req, res) => {
   try {
@@ -62,6 +80,7 @@ export const login = async (req, res) => {
     res.json({
       message: "Login sukses",
       token,
+      ...(req.body.client === "mobile" ? { refreshToken: mobileRefreshToken(user) } : {}),
       user: {
         id_user: user.id_user,
         nama_lengkap: user.nama_lengkap,

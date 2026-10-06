@@ -1,14 +1,18 @@
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
 
-export const authMiddleware = async (req, res, next) => {
-  const match = /^Bearer ([^ ]+)$/i.exec(req.headers.authorization || "");
+const sessionMiddleware = (refresh = false) => async (req, res, next) => {
+  const match = refresh
+    ? (typeof req.body?.refreshToken === "string" ? [null, req.body.refreshToken] : null)
+    : /^Bearer ([^ ]+)$/i.exec(req.headers.authorization || "");
   if (!match) return res.status(401).json({ message: "Silakan login kembali" });
   let decoded;
   try {
     decoded = jwt.verify(match[1], process.env.JWT_SECRET, {
       algorithms: ["HS256"],
     });
+    if (refresh ? decoded.token_type !== "mobile_refresh" : !!decoded.token_type)
+      throw new Error("Invalid token purpose");
   } catch {
     return res
       .status(401)
@@ -51,6 +55,9 @@ export const authMiddleware = async (req, res, next) => {
       .json({ message: "Layanan autentikasi sementara tidak tersedia" });
   }
 };
+
+export const authMiddleware = sessionMiddleware();
+export const mobileRefreshMiddleware = sessionMiddleware(true);
 
 export const roleMiddleware =
   (...roles) =>

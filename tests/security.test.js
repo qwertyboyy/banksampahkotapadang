@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { login } from "../controllers/authController.js";
+import { login, refreshMobileSession } from "../controllers/authController.js";
 import { registerFinal } from "../controllers/authController.js";
 import { hashToken } from "../middlewares/security.js";
 import test from "node:test";
@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import express from "express";
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware, mobileRefreshMiddleware } from "../middlewares/authMiddleware.js";
 import { validPassword, publicError, ownBank } from "../middlewares/security.js";
 import users from "../routes/userRoutes.js";
 import auth from "../routes/authRoutes.js";
@@ -106,5 +106,43 @@ test("admin login returns a token immediately after a correct password", async (
     const payload=jwt.verify(res.body.token,process.env.JWT_SECRET);
     assert.equal(payload.role,"admin_bank");
     assert.equal(payload.session_version,3);
+    assert.equal(res.body.refreshToken, undefined);
+    const mobile=response();
+    await login({body:{identifier:"admin",password,client:"mobile"}},mobile);
+    const refresh=jwt.verify(mobile.body.refreshToken,process.env.JWT_SECRET);
+    assert.equal(refresh.token_type,"mobile_refresh");
+    assert.equal(refresh.exp-refresh.iat,90*24*3600);
   } finally { db.query=original; }
+});
+
+test("mobile renewal validates token purpose, expiration and revocation", async () => {
+  const original=db.query;
+  const user={id_user:7,role:"admin_bank",id_bank_sampah:9,status_akun:"aktif",status_aktif:1,session_version:3};
+  const sign=(claims,expiresIn="90d")=>jwt.sign({id_user:7,session_version:3,...claims},process.env.JWT_SECRET,{expiresIn});
+  try {
+    db.query=async()=>[[user]];
+    const refreshToken=sign({token_type:"mobile_refresh"});
+    const access=response();
+    await authMiddleware({headers:{authorization:`Bearer ${refreshToken}`}},access,()=>assert.fail("refresh token accepted as access"));
+    assert.equal(access.code,401);
+    for(const token of [sign({}),sign({token_type:"mobile_refresh"},-1),sign({token_type:"mobile_refresh",session_version:2})]) {
+      const res=response();
+      await mobileRefreshMiddleware({body:{refreshToken:token}},res,()=>assert.fail("invalid refresh accepted"));
+      assert.equal(res.code,401);
+    }
+    const req={body:{refreshToken}},res=response();let accepted=false;
+    await mobileRefreshMiddleware(req,res,()=>accepted=true);
+    assert.equal(accepted,true);
+    refreshMobileSession(req,res);
+    const renewed=jwt.verify(res.body.token,process.env.JWT_SECRET);
+    assert.equal(renewed.exp-renewed.iat,3600);
+    assert.equal(renewed.role,"admin_bank");
+    assert.equal(renewed.token_type,undefined);
+    for(const variant of [null,{...user,status_aktif:0},{...user,session_version:4}]) {
+      db.query=async()=>[variant?[variant]:[]];
+      const invalid=response();
+      await mobileRefreshMiddleware({body:{refreshToken}},invalid,()=>assert.fail("revoked session renewed"));
+      assert.equal(invalid.code,401);
+    }
+  } finally {db.query=original;}
 });
