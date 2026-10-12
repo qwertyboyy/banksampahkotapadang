@@ -194,6 +194,7 @@ class DashboardModel {
         0 AS penarikan
       FROM transaksi_setor ts
       WHERE YEAR(ts.tanggal_setor) = ?
+        AND ts.id_bank_sampah IN (SELECT id_bank_sampah FROM bank_sampah WHERE metode_saldo='rupiah')
   `;
 
     const params = [tahun];

@@ -1,6 +1,7 @@
 import { publicError } from "../middlewares/security.js";
 import DashboardModel from "../models/dashboardModel.js";
 import db from "../config/db.js";
+import { getMetodeSaldo } from "../models/metodeSaldoModel.js";
 
 export const getDashboardStats = async (req, res) => {
   try {
@@ -185,6 +186,7 @@ export const getDashboardNasabah = async (req, res) => {
       data: {
         profil,
         saldo: profil.saldo,
+        metode_saldo: await getMetodeSaldo(req.user.id_bank_sampah),
         riwayat,
         is_profile_complete: profil.is_claimed === 1,
       },

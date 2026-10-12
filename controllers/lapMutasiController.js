@@ -5,6 +5,7 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 import db from "../config/db.js";
+import { getMetodeSaldo, formatNilai } from "../models/metodeSaldoModel.js";
 
 export const getMutasi = async (req, res) => {
   try {
@@ -62,8 +63,8 @@ export const exportExcel = async (req, res) => {
     const id_bank_sampah = req.user.id_bank_sampah;
 
     const data = await mutasiModel.getMutasi({
-      id_bank_sampah,
       ...req.query,
+      id_bank_sampah,
       no_limit: true,
     });
 
@@ -87,6 +88,8 @@ export const exportExcel = async (req, res) => {
     }));
 
     ws.addRows(safeData);
+    const metode = await getMetodeSaldo(id_bank_sampah);
+    for (const column of ["jumlah", "saldo_sesudah"]) ws.getColumn(column).numFmt = metode === "poin" ? '#,##0.00 "poin"' : '"Rp" #,##0.00';
 
     res.setHeader(
       "Content-Type",
@@ -106,13 +109,13 @@ export const exportPDF = async (req, res) => {
     const id_bank_sampah = req.user.id_bank_sampah;
 
     const [[bank]] = await db.query(
-      "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
+      "SELECT nama_bank_sampah, alamat, logo_path, metode_saldo FROM bank_sampah WHERE id_bank_sampah = ?",
       [id_bank_sampah],
     );
 
     const data = await mutasiModel.getMutasi({
-      id_bank_sampah,
       ...req.query,
+      id_bank_sampah,
       no_limit: true,
     });
 
@@ -439,7 +442,7 @@ export const exportPDF = async (req, res) => {
       doc.text(row.tipe || "-", COL_X.tipe + 4, yPos + 6);
 
       doc.text(
-        "Rp " + jumlah.toLocaleString("id-ID"),
+        formatNilai(jumlah, bank.metode_saldo),
         COL_X.jumlah + 4,
         yPos + 6,
         {
@@ -448,7 +451,7 @@ export const exportPDF = async (req, res) => {
       );
 
       doc.text(
-        "Rp " + saldo.toLocaleString("id-ID"),
+        formatNilai(saldo, bank.metode_saldo),
         COL_X.saldo + 4,
         yPos + 6,
         {
@@ -498,7 +501,7 @@ export const exportPDF = async (req, res) => {
     yPos += 15;
 
     doc.text(
-      `Total Setoran : Rp ${totalSetoran.toLocaleString("id-ID")}`,
+      `Total Setoran : ${formatNilai(totalSetoran, bank.metode_saldo)}`,
       MARGIN,
       yPos,
     );
@@ -506,7 +509,7 @@ export const exportPDF = async (req, res) => {
     yPos += 15;
 
     doc.text(
-      `Total Penarikan : Rp ${totalPenarikan.toLocaleString("id-ID")}`,
+      `Total Penarikan : ${formatNilai(totalPenarikan, bank.metode_saldo)}`,
       MARGIN,
       yPos,
     );

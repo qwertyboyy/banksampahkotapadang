@@ -1,9 +1,19 @@
 import { publicError } from "../middlewares/security.js";
 import * as JenisModel from "../models/sampahModel.js";
 import db from "../config/db.js";
+import { getMetodeSaldo } from "../models/metodeSaldoModel.js";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
+
+async function validateJenis(data, bank) {
+  const field = await getMetodeSaldo(bank) === "poin" ? "poin_per_kg" : "harga_per_kg";
+  const value = Number(data[field]);
+  if (!data.id_kategori || typeof data.nama_jenis !== "string" || !data.nama_jenis.trim() || !Number.isFinite(value) || value <= 0 || value > 9999999999999.99 || Math.abs(value * 100 - Math.round(value * 100)) > 0.001) {
+    throw Object.assign(new Error("Kategori, nama jenis, dan nilai per kg positif (maksimal dua desimal) wajib diisi"), { status: 400 });
+  }
+  return { id_kategori: data.id_kategori, status_aktif: data.status_aktif ?? 1, nama_jenis: data.nama_jenis.trim(), [field]: value, [field === "poin_per_kg" ? "harga_per_kg" : "poin_per_kg"]: 0 };
+}
 
 /* ================= GET ================= */
 export const getJenis = async (req, res) => {
@@ -45,29 +55,19 @@ export const getKategori = async (req, res) => {
 /* ================= CREATE ================= */
 export const createJenis = async (req, res) => {
   try {
-    const { id_kategori, nama_jenis, harga_per_kg } = req.body;
-
-    if (!id_kategori || !nama_jenis || !harga_per_kg) {
-      return res.status(400).json({ message: "Field wajib diisi" });
-    }
-
-    if (harga_per_kg <= 0) {
-      return res.status(400).json({ message: "Harga tidak valid" });
-    }
+    const input = await validateJenis(req.body, req.user.id_bank_sampah);
 
     const id_bank_sampah = req.user.id_bank_sampah;
 
     await JenisModel.createJenis({
       id_bank_sampah,
-      id_kategori,
-      nama_jenis,
-      harga_per_kg,
+      ...input,
     });
 
     res.json({ message: "Berhasil tambah data" });
   } catch (err) {
     console.error(err); // WAJIB
-    res.status(500).json({ message: "Gagal tambah data" });
+    res.status(err.status || 500).json({ message: err.status ? err.message : "Gagal tambah data" });
   }
 };
 
@@ -76,11 +76,11 @@ export const updateJenis = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await JenisModel.updateJenis(id, req.body, req.user.id_bank_sampah);
+    await JenisModel.updateJenis(id, await validateJenis(req.body, req.user.id_bank_sampah), req.user.id_bank_sampah);
 
     res.json({ message: "Berhasil update" });
-  } catch {
-    res.status(500).json({ message: "Gagal update" });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.status ? err.message : "Gagal update" });
   }
 };
 
@@ -122,7 +122,7 @@ export const exportPdfHargaSampah = async (req, res) => {
     const id_bank_sampah = req.user.id_bank_sampah;
 
     const [[bank]] = await db.query(
-      "SELECT nama_bank_sampah, alamat, logo_path FROM bank_sampah WHERE id_bank_sampah = ?",
+      "SELECT nama_bank_sampah, alamat, logo_path, metode_saldo FROM bank_sampah WHERE id_bank_sampah = ?",
       [id_bank_sampah],
     );
 
@@ -206,7 +206,7 @@ export const exportPdfHargaSampah = async (req, res) => {
       doc.text("Jenis Sampah", COL_X.jenis + 4, yPos + 8, {
         width: COL_W.jenis - 8,
       });
-      doc.text("Harga / Kg", COL_X.harga, yPos + 8, {
+      doc.text(bank.metode_saldo === "poin" ? "Poin / Kg" : "Harga / Kg", COL_X.harga, yPos + 8, {
         width: COL_W.harga - 6,
         align: "right",
       });
@@ -277,7 +277,7 @@ export const exportPdfHargaSampah = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(14)
       .fillColor(COLOR.dark)
-      .text("LAPORAN HARGA SAMPAH", MARGIN, yPos, {
+      .text(bank.metode_saldo === "poin" ? "LAPORAN POIN SAMPAH" : "LAPORAN HARGA SAMPAH", MARGIN, yPos, {
         width: TABLE_W,
         align: "center",
       });
@@ -345,7 +345,7 @@ export const exportPdfHargaSampah = async (req, res) => {
         .font("Helvetica-Bold")
         .fillColor(COLOR.primary)
         .text(
-          "Rp " + Number(row.harga_per_kg || 0).toLocaleString("id-ID"),
+          bank.metode_saldo === "poin" ? Number(row.poin_per_kg).toLocaleString("id-ID") + " poin" : "Rp " + Number(row.harga_per_kg || 0).toLocaleString("id-ID"),
           COL_X.harga,
           yPos + 7,
           { width: COL_W.harga - 6, align: "right" },

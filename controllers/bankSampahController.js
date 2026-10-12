@@ -57,8 +57,8 @@ export const createBankSampah = async (req, res) => {
       id,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Gagal menambah bank sampah",
+    res.status(error.status || 500).json({
+      message: error.status ? error.message : "Gagal menambah bank sampah",
     });
   }
 };
@@ -73,8 +73,8 @@ export const updateBankSampah = async (req, res) => {
       message: "Bank sampah berhasil diupdate",
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Gagal update bank sampah",
+    res.status(error.status || 500).json({
+      message: error.status ? error.message : "Gagal update bank sampah",
     });
   }
 };

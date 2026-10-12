@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import BankSampah from "../models/bankSampahModel.js";
 import db from "../config/db.js";
+import { getMetodeSaldo, formatNilai } from "../models/metodeSaldoModel.js";
 
 // ================= HELPER =================
 const sanitizeFileName = (name) =>
@@ -56,6 +57,7 @@ export const getAvailableYears = async (req, res) => {
 // ================= EXCEL =================
 export const exportExcelLaporanKinerja = async (req, res) => {
   try {
+    const metode = await getMetodeSaldo(req.user.id_bank_sampah);
     const { id_bank_sampah } = req.user;
     let { year } = req.query;
 
@@ -90,7 +92,7 @@ export const exportExcelLaporanKinerja = async (req, res) => {
       "Total Transaksi",
       "Penarikan (Rp)",
       "Setoran (Kg)",
-      "Setoran (Rp)",
+      metode === "poin" ? "Setoran (Poin)" : "Setoran (Rp)",
     ]);
 
     const bulanNama = [
@@ -165,6 +167,7 @@ export const exportExcelLaporanKinerja = async (req, res) => {
 // ================= PDF =================
 export const exportPdfLaporanKinerja = async (req, res) => {
   try {
+    const metode = await getMetodeSaldo(req.user.id_bank_sampah);
     // ✅ FIX 1: destructuring benar
     const { id_bank_sampah } = req.user;
 
@@ -443,7 +446,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       );
 
       doc.text(
-        `Rp ${formatRupiah(d.total_nominal_setor)}`,
+        formatNilai(d.total_nominal_setor, metode),
         COL_X.setor + 4,
         yPos + 6,
         {
@@ -490,7 +493,7 @@ export const exportPdfLaporanKinerja = async (req, res) => {
       align: "center",
     });
 
-    doc.text(`Rp ${formatRupiah(total.setor)}`, COL_X.setor, yPos + 6, {
+    doc.text(formatNilai(total.setor, metode), COL_X.setor, yPos + 6, {
       width: COL_W.setor,
       align: "center",
     });

@@ -1,5 +1,6 @@
 // models/setorModel.js
 import db from "../config/db.js";
+import { getMetodeSaldo } from "./metodeSaldoModel.js";
 
 export const createSetor = async (data) => {
   const conn = await db.getConnection();
@@ -8,6 +9,7 @@ export const createSetor = async (data) => {
     await conn.beginTransaction();
 
     const { id_bank_sampah, id_nasabah, items, admin_id } = data;
+    const metode = await getMetodeSaldo(id_bank_sampah, conn);
 
     // 🔥 1. Hitung total dari backend
     let totalBerat = 0;
@@ -17,19 +19,22 @@ export const createSetor = async (data) => {
       if (!Number.isFinite(Number(item.berat)) || Number(item.berat) <= 0) throw new Error("Berat tidak valid");
       item.berat = Number(item.berat);
       const [jenis] = await conn.query(
-        "SELECT harga_per_kg FROM jenis_sampah_bank WHERE id_jenis_sampah = ? AND id_bank_sampah = ? AND status_aktif = 1",
+        "SELECT harga_per_kg, poin_per_kg FROM jenis_sampah_bank WHERE id_jenis_sampah = ? AND id_bank_sampah = ? AND status_aktif = 1",
         [item.id_jenis_sampah, id_bank_sampah],
       );
 
       if (!jenis.length) throw new Error("Jenis sampah tidak ditemukan");
 
-      const harga = jenis[0].harga_per_kg;
-      const subtotal = harga * item.berat;
+      const harga = Number(metode === "poin" ? jenis[0].poin_per_kg : jenis[0].harga_per_kg);
+      if (!Number.isFinite(harga) || harga <= 0) throw new Error("Nilai per kg belum ditetapkan untuk jenis sampah ini");
+      const subtotal = Math.round(harga * item.berat * 100) / 100;
 
       item.subtotal = subtotal;
       totalBerat += item.berat;
       totalNilai += subtotal;
     }
+    totalNilai = Math.round(totalNilai * 100) / 100;
+    if (!Number.isFinite(totalNilai) || totalNilai <= 0 || totalNilai > 9999999999999.99) throw new Error("Total nilai setoran tidak valid");
 
     // 🔥 2. Insert transaksi_setor
     const [transaksi] = await conn.query(
@@ -90,6 +95,7 @@ export const createSetor = async (data) => {
       message: "Setor berhasil",
       id_transaksi: idTransaksi,
       saldo_sesudah: saldoSesudah,
+      metode_saldo: metode,
     };
   } catch (error) {
     await conn.rollback();

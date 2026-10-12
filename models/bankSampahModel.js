@@ -11,6 +11,7 @@ class BankSampah {
   bs.kode_bank_sampah,
   bs.nama_bank_sampah,
   bs.no_telepon,
+  bs.metode_saldo,
   kl.nama_kelurahan,
   kc.nama,
   (
@@ -67,7 +68,12 @@ LIMIT ? OFFSET ?
       id_kelurahan,
       alamat,
       no_telepon,
+      metode_saldo,
     } = data;
+
+    if (!["rupiah", "poin"].includes(metode_saldo)) {
+      throw Object.assign(new Error("Pilih metode rupiah atau poin"), { status: 400 });
+    }
 
     const conn = await db.getConnection();
 
@@ -77,8 +83,8 @@ LIMIT ? OFFSET ?
       const [result] = await conn.query(
         `
         INSERT INTO bank_sampah
-        (kode_bank_sampah, no_urut_bank, nama_bank_sampah, id_kelurahan, alamat, no_telepon)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (kode_bank_sampah, no_urut_bank, nama_bank_sampah, id_kelurahan, alamat, no_telepon, metode_saldo)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
           kode_bank_sampah,
@@ -87,6 +93,7 @@ LIMIT ? OFFSET ?
           id_kelurahan,
           alamat,
           no_telepon,
+          metode_saldo,
         ],
       );
 
@@ -107,6 +114,8 @@ LIMIT ? OFFSET ?
   }
 
   static async update(id, data) {
+    const metode = (await this.getByIdFull(id))?.metode_saldo;
+    if (data.metode_saldo && data.metode_saldo !== metode) throw Object.assign(new Error("Metode saldo ditetapkan saat pendaftaran bank sampah"), { status: 409 });
     const { nama_bank_sampah, id_kelurahan, alamat, no_telepon } = data;
 
     await db.query(
@@ -145,6 +154,7 @@ LIMIT ? OFFSET ?
       bs.nama_bank_sampah,
       bs.alamat,
       bs.no_telepon,
+      bs.metode_saldo,
       kl.nama_kelurahan,
       kc.nama AS nama_kecamatan
     FROM bank_sampah bs
@@ -168,7 +178,8 @@ LIMIT ? OFFSET ?
       nama_bank_sampah,
       alamat,
       no_telepon,
-      logo_path
+      logo_path,
+      metode_saldo
     FROM bank_sampah
     WHERE id_bank_sampah = ?
     `,

@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import { getMetodeSaldo } from "./metodeSaldoModel.js";
 import { getKonfigurasiBankSampah } from "./konfigurasiBankSampahModel.js";
 
 /* ==========================================================
@@ -27,6 +28,7 @@ function formatDate(value) {
  * ========================================================== */
 
 export const getSummary = async (id_bank_sampah) => {
+  const isPoin = await getMetodeSaldo(id_bank_sampah) === "poin";
   const { penyesuaian_setoran_laporan } =
     await getKonfigurasiBankSampah(id_bank_sampah);
   // Ambil snapshot saldo kas
@@ -42,9 +44,13 @@ export const getSummary = async (id_bank_sampah) => {
   );
 
   if (!saldoAwal) {
+    const [[nasabah]] = await db.query(
+      "SELECT COALESCE(SUM(saldo),0) AS total FROM nasabah WHERE id_bank_sampah = ? AND status_aktif = 1",
+      [id_bank_sampah],
+    );
     return {
       saldoKas: 0,
-      kewajibanNasabah: 0,
+      kewajibanNasabah: isPoin ? 0 : Number(nasabah.total),
       pencairanNasabah: 0,
       labaBersih: 0,
       saldoKasAwal: 0,
@@ -141,12 +147,12 @@ export const getSummary = async (id_bank_sampah) => {
 
   const saldoKas = saldoKasAwal + totalPenjualan - totalPenarikanPeriode;
 
-  const kewajibanNasabah = Number(nasabah.total);
+  const kewajibanNasabah = isPoin ? 0 : Number(nasabah.total);
 
   const pencairanNasabah = Number(penarikanSemua.total);
   const totalSetoran = Math.max(
     0,
-    Number(mutasi.total_setoran) - penyesuaian_setoran_laporan,
+    isPoin ? 0 : Number(mutasi.total_setoran) - penyesuaian_setoran_laporan,
   );
 
   const totalMutasiPenarikan = Number(mutasi.total_penarikan);
@@ -190,6 +196,7 @@ export async function getRincianBulanan(id_bank_sampah, tahun) {
         `SELECT MONTH(tanggal_setor) AS bulan, COALESCE(SUM(total_nilai), 0) AS total
          FROM transaksi_setor
          WHERE id_bank_sampah = ? AND YEAR(tanggal_setor) = ?
+           AND id_bank_sampah IN (SELECT id_bank_sampah FROM bank_sampah WHERE metode_saldo='rupiah')
          GROUP BY MONTH(tanggal_setor)`,
         [id_bank_sampah, tahun],
       ),
@@ -300,6 +307,7 @@ export async function getLaporanCetak(id_bank_sampah, { startDate, endDate }) {
        FROM transaksi_setor ts
        JOIN nasabah n ON n.id_nasabah = ts.id_nasabah
        WHERE ts.id_bank_sampah = ? AND DATE(ts.tanggal_setor) BETWEEN ? AND ?
+         AND ts.id_bank_sampah IN (SELECT id_bank_sampah FROM bank_sampah WHERE metode_saldo='rupiah')
        ORDER BY ts.tanggal_setor ASC`,
       [id_bank_sampah, startDate, endDate],
     ),
@@ -416,6 +424,7 @@ async function getChart(
         `SELECT DATE(tanggal_setor) AS tgl, COALESCE(SUM(total_nilai), 0) AS total
          FROM transaksi_setor
          WHERE id_bank_sampah = ? AND DATE(tanggal_setor) BETWEEN ? AND ?
+           AND id_bank_sampah IN (SELECT id_bank_sampah FROM bank_sampah WHERE metode_saldo='rupiah')
          GROUP BY DATE(tanggal_setor)`,
         [id_bank_sampah, startDate, endDate],
       ),
@@ -492,6 +501,7 @@ async function getActivities(id_bank_sampah, startDate, endDate, limit = 200) {
       FROM transaksi_setor ts
       JOIN nasabah n ON n.id_nasabah = ts.id_nasabah
       WHERE ts.id_bank_sampah = ? AND DATE(ts.tanggal_setor) BETWEEN ? AND ?
+        AND ts.id_bank_sampah IN (SELECT id_bank_sampah FROM bank_sampah WHERE metode_saldo='rupiah')
     )
     UNION ALL
     (

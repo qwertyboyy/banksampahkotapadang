@@ -4,6 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "migrate:impor-nasabah": "node scripts/migrate-import-nasabah.js",
+    "test:impor-db": "node tests/nasabah-import-db.integration.js",
+    "migrate:metode": "node scripts/migrate-metode-bank.js",
     "test": "node --test tests/*.test.js",
     "start": "node app.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js",

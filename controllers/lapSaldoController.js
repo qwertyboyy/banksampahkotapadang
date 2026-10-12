@@ -1,6 +1,7 @@
 import { publicError } from "../middlewares/security.js";
 import * as saldoModel from "../models/lapSaldoModel.js";
 import db from "../config/db.js";
+import { getMetodeSaldo, formatNilai } from "../models/metodeSaldoModel.js";
 import PDFDocument from "pdfkit";
 import ExcelJS from "exceljs";
 import path from "path";
@@ -43,8 +44,8 @@ export const exportSaldoExcel = async (req, res) => {
     const id_bank_sampah = req.user.id_bank_sampah;
 
     const data = await saldoModel.getSaldoNasabah({
-      id_bank_sampah,
       ...req.query,
+      id_bank_sampah,
     });
 
     const wb = new ExcelJS.Workbook();
@@ -60,12 +61,12 @@ export const exportSaldoExcel = async (req, res) => {
     data.forEach((row) => {
       ws.addRow({
         ...row,
-        saldo_sesudah: Number(row.saldo_sesudah),
+        saldo_sesudah: Number(row.saldo),
       });
     });
 
     // format currency
-    ws.getColumn("saldo_sesudah").numFmt = '"Rp" #,##0';
+    ws.getColumn("saldo_sesudah").numFmt = await getMetodeSaldo(id_bank_sampah) === "poin" ? '#,##0.00 "poin"' : '"Rp" #,##0.00';
 
     res.setHeader(
       "Content-Type",
@@ -99,6 +100,7 @@ const capitalizeEachWord = (text) => {
 
 export const exportSaldoPDF = async (req, res) => {
   try {
+    const metode = await getMetodeSaldo(req.user.id_bank_sampah);
     const id_bank_sampah = req.user.id_bank_sampah;
 
     const [[bank]] = await db.query(
@@ -107,8 +109,8 @@ export const exportSaldoPDF = async (req, res) => {
     );
 
     const data = await saldoModel.getSaldoNasabah({
-      id_bank_sampah,
       ...req.query,
+      id_bank_sampah,
     });
 
     const doc = new PDFDocument({ margin: 40 });
@@ -354,7 +356,7 @@ export const exportSaldoPDF = async (req, res) => {
         .font("Helvetica-Bold")
         .fillColor(COLOR.primary)
         .text(
-          "Rp " + Number(row.saldo || 0).toLocaleString("id-ID"),
+          formatNilai(row.saldo, metode),
           COL_X.saldo,
           yPos + 6,
           {
@@ -409,7 +411,7 @@ export const exportSaldoPDF = async (req, res) => {
       //   });
 
       doc.text(
-        "Rp " + totalSaldo.toLocaleString("id-ID"),
+        formatNilai(totalSaldo, metode),
         COL_X.saldo,
         yPos + 6,
         {

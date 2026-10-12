@@ -34,6 +34,7 @@ export const getLaporanHargaSampah = async (id_bank_sampah) => {
        js.id_jenis_sampah,
        js.nama_jenis,
        js.harga_per_kg,
+       js.poin_per_kg,
        js.status_aktif,
        k.nama_kategori
      FROM jenis_sampah_bank js
@@ -49,24 +50,24 @@ export const getLaporanHargaSampah = async (id_bank_sampah) => {
 };
 
 export const createJenis = async (data) => {
-  const { id_bank_sampah, id_kategori, nama_jenis, harga_per_kg } = data;
+  const { id_bank_sampah, id_kategori, nama_jenis, harga_per_kg = 0, poin_per_kg = 0 } = data;
 
   return db.query(
     `INSERT INTO jenis_sampah_bank
-    (id_bank_sampah, id_kategori, nama_jenis, harga_per_kg, status_aktif)
-    VALUES (?, ?, ?, ?, 1)`,
-    [id_bank_sampah, id_kategori, nama_jenis, harga_per_kg],
+    (id_bank_sampah, id_kategori, nama_jenis, harga_per_kg, poin_per_kg, status_aktif)
+    VALUES (?, ?, ?, ?, ?, 1)`,
+    [id_bank_sampah, id_kategori, nama_jenis, harga_per_kg, poin_per_kg],
   );
 };
 
 export const updateJenis = async (id, data, id_bank_sampah) => {
-  const { id_kategori, nama_jenis, harga_per_kg, status_aktif } = data;
+  const { id_kategori, nama_jenis, harga_per_kg = 0, poin_per_kg = 0, status_aktif } = data;
 
   return db.query(
     `UPDATE jenis_sampah_bank
-     SET id_kategori = ?, nama_jenis = ?, harga_per_kg = ?, status_aktif = ?
+     SET id_kategori = ?, nama_jenis = ?, harga_per_kg = ?, poin_per_kg = ?, status_aktif = ?
      WHERE id_jenis_sampah = ? AND id_bank_sampah = ?`,
-    [id_kategori, nama_jenis, harga_per_kg, status_aktif, id, id_bank_sampah],
+    [id_kategori, nama_jenis, harga_per_kg, poin_per_kg, status_aktif, id, id_bank_sampah],
   );
 };
 
@@ -91,7 +92,8 @@ export const getJenisSelect = async (id_bank_sampah, keyword = "") => {
     SELECT 
       id_jenis_sampah,
       nama_jenis,
-      harga_per_kg
+      harga_per_kg,
+      poin_per_kg
     FROM jenis_sampah_bank
     WHERE status_aktif = 1
     AND id_bank_sampah = ?

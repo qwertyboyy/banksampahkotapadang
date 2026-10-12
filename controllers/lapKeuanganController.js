@@ -27,7 +27,7 @@ const NAMA_BULAN = [
 export async function dashboard(req, res) {
   try {
     // Asumsi: id_bank_sampah bisa dikirim via query, atau tersedia di req.user (middleware auth)
-    const id_bank_sampah = req.query.id_bank_sampah || req.user?.id_bank_sampah;
+    const id_bank_sampah = req.user?.id_bank_sampah;
 
     if (!id_bank_sampah) {
       return res
@@ -77,7 +77,7 @@ export async function dashboard(req, res) {
  */
 export async function summary(req, res) {
   try {
-    const id_bank_sampah = req.query.id_bank_sampah || req.user?.id_bank_sampah;
+    const id_bank_sampah = req.user?.id_bank_sampah;
 
     if (!id_bank_sampah) {
       return res
@@ -104,7 +104,7 @@ export async function summary(req, res) {
  */
 export async function bulanan(req, res) {
   try {
-    const id_bank_sampah = req.query.id_bank_sampah || req.user?.id_bank_sampah;
+    const id_bank_sampah = req.user?.id_bank_sampah;
 
     if (!id_bank_sampah) {
       return res
@@ -147,7 +147,7 @@ export async function bulanan(req, res) {
  */
 export async function cetak(req, res) {
   try {
-    const id_bank_sampah = req.query.id_bank_sampah || req.user?.id_bank_sampah;
+    const id_bank_sampah = req.user?.id_bank_sampah;
     const mode = req.query.mode;
 
     if (!id_bank_sampah) {
@@ -875,7 +875,7 @@ export async function detail(req, res) {
 
     const data = await lapKeuanganModel.getDetail(id, jenisUpper);
 
-    if (!data) {
+    if (!data || Number(data.header?.id_bank_sampah) !== Number(req.user.id_bank_sampah)) {
       return res
         .status(404)
         .json({ success: false, message: "Data transaksi tidak ditemukan" });

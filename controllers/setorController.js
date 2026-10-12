@@ -9,7 +9,7 @@ export const setorSampah = async (req, res) => {
     const admin_id = req.user.id_user; // Assuming you have admin_id in the user object
 
     // 🔥 Validasi
-    if (!id_nasabah || !items?.length) {
+    if (!id_nasabah || !Array.isArray(items) || !items.length || items.length > 100) {
       return res.status(400).json({ message: "Data tidak lengkap" });
     }
 

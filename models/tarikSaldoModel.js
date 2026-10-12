@@ -1,5 +1,6 @@
 // models/tarikModel.js
 import db from "../config/db.js";
+import { getMetodeSaldo } from "./metodeSaldoModel.js";
 import { getKonfigurasiBankSampah } from "./konfigurasiBankSampahModel.js";
 
 export const createTarik = async (data) => {
@@ -10,6 +11,9 @@ export const createTarik = async (data) => {
 
     const { id_bank_sampah, id_nasabah, jumlah_tarik, keterangan, admin_id } =
       data;
+    if (await getMetodeSaldo(id_bank_sampah, conn) !== "rupiah") {
+      throw new Error("Bank dengan metode poin tidak dapat melakukan penarikan uang");
+    }
 
     // 🔥 1. Lock saldo nasabah
     const [rows] = await conn.query(
