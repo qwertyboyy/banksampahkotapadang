@@ -1,6 +1,9 @@
 import db from "./config/db.js";
+import kontainerRoutes from "./routes/kontainerRoutes.js";
 import { securityHeaders, auditRequests, rateLimit, validateInput } from "./middlewares/security.js";
 import express from "express";
+import { createServer } from 'node:http';
+import { attachKontainerRealtime, notifyKontainerWrites } from './services/kontainerRealtime.js';
 import cors from "cors";
 import dotenv from "dotenv";
 import config from "./config/env.js";
@@ -62,6 +65,9 @@ const allowedOrigins = [
   "http://localhost:8081",
 ].filter(origin => env !== "production" || origin.startsWith("https://"));
 
+const server = createServer(app);
+const kontainerRealtime = attachKontainerRealtime(server, allowedOrigins);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(
@@ -88,6 +94,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
  * ✅ ROUTES
  */
 app.use("/api/auth", authRoutes);
+app.use("/api/kontainer", notifyKontainerWrites(kontainerRealtime.notify), kontainerRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bank-sampah", bankSampahRoutes);
@@ -145,7 +152,7 @@ const cleanup = setInterval(() => {
 cleanup.unref();
 const PORT = config.app.port;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`ENV: ${env}`);
   console.log(`Server running on port ${PORT}`);
   console.log("DB NAME:", process.env.DB_NAME);

@@ -78,7 +78,9 @@ export const securityHeaders = (req, res, next) => {
   const originalJson = res.json.bind(res);
   res.json = (body) =>
     originalJson(
-      res.statusCode >= 500
+      res.statusCode === 503 && body?.code === "KONTAINER_INACTIVE"
+        ? { code: "KONTAINER_INACTIVE", message: "Monitoring kontainer tidak aktif" }
+        : res.statusCode >= 500
         ? { message: "Layanan sementara bermasalah. Silakan coba kembali" }
         : body,
     );
@@ -148,7 +150,7 @@ export const validateInput = (req, res, next) => {
   }
   if (
     req.body?.role !== undefined &&
-    !["nasabah", "admin_bank", "superadmin"].includes(req.body.role)
+    !["nasabah", "admin_bank", "superadmin", "lps", "petugas_truk"].includes(req.body.role)
   )
     return res.status(400).json({ message: "Peran tidak valid" });
   if (

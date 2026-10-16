@@ -42,6 +42,13 @@ export const addUser = async (req, res) => {
     const { nama_lengkap, email, username, password, role, id_bank_sampah } =
       req.body;
 
+    if (!["superadmin", "admin_bank", "nasabah", "lps", "petugas_truk"].includes(role)) {
+      return res.status(400).json({ message: "Role tidak valid" });
+    }
+    if (["lps","petugas_truk"].includes(role) && id_bank_sampah) {
+      return res.status(400).json({ message: "Akun petugas kontainer tidak terhubung ke bank sampah" });
+    }
+
     const existingUser = await UserModel.findUserByUsername(username);
 
     if (existingUser) {
@@ -98,7 +105,7 @@ export const addUser = async (req, res) => {
       id_nasabah = result.insertId;
     }
 
-    await UserModel.createUser(conn, {
+    const newUserId = await UserModel.createUser(conn, {
       nama_lengkap,
       email,
       username,
@@ -107,6 +114,10 @@ export const addUser = async (req, res) => {
       id_bank_sampah: id_bank_sampah || null,
       id_nasabah,
     });
+
+    if (["lps","petugas_truk"].includes(role)) {
+      await conn.query("UPDATE users SET status_akun = 'aktif' WHERE id_user = ?", [newUserId]);
+    }
 
     await conn.commit();
 
@@ -128,6 +139,9 @@ export const editUser = async (req, res) => {
   try {
     const id = req.params.id;
 
+    if (!["superadmin", "admin_bank", "nasabah", "lps", "petugas_truk"].includes(req.body.role)) {
+      return res.status(400).json({ message: "Role tidak valid" });
+    }
     await UserModel.updateUser(id, req.body);
 
     res.json({

@@ -1,0 +1,1432 @@
+[
+    {
+        "kode_titik":  "1",
+        "nama":  "TPS BELAKANG POLSEK KOTO TANGAH",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.819583,
+        "longitude":  100.320588,
+        "jumlah_kontainer":  3,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "3",
+        "nama":  "TPS PASIA NAN TIGO",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.841989,
+        "longitude":  100.322231,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "4",
+        "nama":  "TPS BUNGO PASANG",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.864658,
+        "longitude":  100.346,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "5",
+        "nama":  "TPS SIMPANG DAMRI/ STASIUN TABING",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.868162,
+        "longitude":  100.343187,
+        "jumlah_kontainer":  1,
+        "keterangan":  "TERSEDIA JAM 16:00 - 05:00 WIB",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "6",
+        "nama":  "TPS LINGGAR JATI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.865855,
+        "longitude":  100.346494,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "7",
+        "nama":  "TPS ANAK AIR",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.825292,
+        "longitude":  100.3364045,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "8",
+        "nama":  "TPS TERMINAL ANAK AIR",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.827506,
+        "longitude":  100.330153,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "9",
+        "nama":  "TPS KPIK/ SIMP. PESANTREN LUMIN",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.850347,
+        "longitude":  100.366061,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "10",
+        "nama":  "TPS DEPAN TVRI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.865099,
+        "longitude":  100.377776,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "11",
+        "nama":  "TPS ASRAMA HAJI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.879914,
+        "longitude":  100.347758,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "12",
+        "nama":  "TPS BALAIKOTA",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.875831,
+        "longitude":  100.389456,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "13",
+        "nama":  "TPS PERUMAHAN NUANSA",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.855694,
+        "longitude":  100.374489,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "14",
+        "nama":  "TPS MEGA PERMAI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.807199,
+        "longitude":  100.310968,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "15",
+        "nama":  "TPS BRIMOB PADANG SARAI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.823506,
+        "longitude":  100.306275,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "16",
+        "nama":  "TPS TUNGGUL HITAM",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.889399,
+        "longitude":  100.358339,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "17",
+        "nama":  "TPS KAMPUS UBH BY PASS",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.87823,
+        "longitude":  100.383041,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "18",
+        "nama":  "TPS RS. SITI RAHMAH",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.870317,
+        "longitude":  100.385131,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "19",
+        "nama":  "TPS LP ANAK AIR",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.812365,
+        "longitude":  100.338733,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "20",
+        "nama":  "TPS UIN SUNGAI BANGEK",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.808283,
+        "longitude":  100.374036,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "21",
+        "nama":  "TPS TANJUNG AUR",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.835333,
+        "longitude":  100.356239,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "22",
+        "nama":  "TPS SIMPANG KOTO PULAI",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.847216,
+        "longitude":  100.348828,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "23",
+        "nama":  "TPS PASIR JAMBAK",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.827728,
+        "longitude":  100.302167,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "24",
+        "nama":  "TPS SMA 13 PADANG",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.830154,
+        "longitude":  100.363138,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "25",
+        "nama":  "TPS BATANG KABUNG",
+        "kecamatan":  "KOTO TANGAH",
+        "latitude":  -0.854782,
+        "longitude":  100.344297,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "28",
+        "nama":  "TPS POLONIA",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.8954,
+        "longitude":  100.352711,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "29",
+        "nama":  "TPS SERANTI",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.892252,
+        "longitude":  100.35699,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "30",
+        "nama":  "TPS PATENGGANGAN",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.890189,
+        "longitude":  100.346819,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "31",
+        "nama":  "TPS TAMSIS ATAS",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.930089,
+        "longitude":  100.365875,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "32",
+        "nama":  "TPS ALAI PARAK KOPI",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.934603,
+        "longitude":  100.373619,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "33",
+        "nama":  "TPS LOLONG BELANTI",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.92012,
+        "longitude":  100.353365,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "34",
+        "nama":  "TPS ULAK KARANG UTARA",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.90544,
+        "longitude":  100.34498,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "35",
+        "nama":  "TPS JOHOR ASRATEK",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.912317,
+        "longitude":  100.350654,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "36",
+        "nama":  "TPS JALAN PAUS",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.911713,
+        "longitude":  100.347088,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "37",
+        "nama":  "TPS AIR TAWAR BARAT",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.903796,
+        "longitude":  100.346253,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "39",
+        "nama":  "TPS KANTOR PU JALAN KHATIB SULAIMAN",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.91062,
+        "longitude":  100.355695,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "40",
+        "nama":  "TPS KANTOR PENGADILAN KHATIB",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.911272,
+        "longitude":  100.357222,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "41",
+        "nama":  "TPS SMA 3 PADANG (DALAM)",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.91945,
+        "longitude":  100.364811,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "42",
+        "nama":  "TPS AL AZHAR 32 KHATIB SULAIMAN",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.910077,
+        "longitude":  100.355694,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "43",
+        "nama":  "TPS BASKO GRAND MALL",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.901754,
+        "longitude":  100.350939,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "44",
+        "nama":  "TPS TRANSMART",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.912624,
+        "longitude":  100.35773,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "45",
+        "nama":  "TPS UNP (DALAM)",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.894792,
+        "longitude":  100.350404,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "46",
+        "nama":  "TPS DPRD PROVINSI",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.906876,
+        "longitude":  100.351411,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "47",
+        "nama":  "TPS KAMPUS UBH ULAK KARANG",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.906618,
+        "longitude":  100.342429,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "48",
+        "nama":  "TPS SMA 1 PADANG (DALAM)",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.918859,
+        "longitude":  100.353457,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "49",
+        "nama":  "TPS BATALYON 133 YUDHA SAKTI",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.900745,
+        "longitude":  100.353544,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "50",
+        "nama":  "TPS LPMP AIR TAWAR",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.894984,
+        "longitude":  100.347643,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "52",
+        "nama":  "TPS MESJID RAYA SUMBAR",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.923319,
+        "longitude":  100.362527,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "53",
+        "nama":  "TPS IBNU SINA",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.921354,
+        "longitude":  100.366831,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "54",
+        "nama":  "TPS JALAN TRANSITO (TEPI PANTAI)",
+        "kecamatan":  "PADANG UTARA",
+        "latitude":  -0.918276,
+        "longitude":  100.348227,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "55",
+        "nama":  "TPS BAWAH JEMBATAN MUARO LASAK",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.930215,
+        "longitude":  100.350283,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "56",
+        "nama":  "TPS PARKIRAN DANAU CIMPAGO",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.93137,
+        "longitude":  100.35036,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "59",
+        "nama":  "TPS RIMBO TAPI BANDA/ RIMBO KALUANG",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.930811,
+        "longitude":  100.352144,
+        "jumlah_kontainer":  3,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "60",
+        "nama":  "TPS RATULANGI",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.94608,
+        "longitude":  100.360979,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "61",
+        "nama":  "TPS KAMPUNG JAWA DALAM",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.94875,
+        "longitude":  100.35748,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "62",
+        "nama":  "TPS SMA 2 PADANG (DALAM)",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.929578,
+        "longitude":  100.3542,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "63",
+        "nama":  "TPS PLAZA ANDALAS",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.950961,
+        "longitude":  100.355698,
+        "jumlah_kontainer":  2,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "64",
+        "nama":  "TPS BELAKANG TANGSI/ MUSEUM ADITIAWARMAN",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.955344,
+        "longitude":  100.356282,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "65",
+        "nama":  "TPS LP MUARO (DALAM)",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.962911,
+        "longitude":  100.353284,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "66",
+        "nama":  "TPS KANTOR POLDA",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.936523,
+        "longitude":  100.359982,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "67",
+        "nama":  "TPS KANTOR GUBERNUR",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.936688,
+        "longitude":  100.359896,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "68",
+        "nama":  "TPS KOREM",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.94147,
+        "longitude":  100.360562,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "69",
+        "nama":  "TPS BPD/ BANK NAGARI PEMUDA",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.949098,
+        "longitude":  100.354042,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "71",
+        "nama":  "TPS SAMSAT",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.928992,
+        "longitude":  100.355324,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "72",
+        "nama":  "TPS GOR (DEPAN KOLAM BERENANG TERATAI)",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.929692,
+        "longitude":  100.35941,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "73",
+        "nama":  "TPS HOTEL PANGERAN",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.92431,
+        "longitude":  100.350459,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "74",
+        "nama":  "TPS HOTEL MERCURE",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.93593,
+        "longitude":  100.35244,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "75",
+        "nama":  "TPS KOTO MARAPAK",
+        "kecamatan":  "PADANG BARAT",
+        "latitude":  -0.946297,
+        "longitude":  100.351917,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "76",
+        "nama":  "TPS PARAK PISANG",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.951406,
+        "longitude":  100.374952,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "77",
+        "nama":  "TPS BELAKANG SMP 30 PADANG",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.943704,
+        "longitude":  100.379392,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "78",
+        "nama":  "TPS KUBU MARAPALAM",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.953368,
+        "longitude":  100.389171,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "79",
+        "nama":  "TPS BAWAH JEMBATAN TAMSIS",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.930505,
+        "longitude":  100.366677,
+        "jumlah_kontainer":  1,
+        "keterangan":  "TERSEDIA JAM 16:00 - 05:00 WIB",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "80",
+        "nama":  "TPS JEMBATAN ANDALAS",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.942727,
+        "longitude":  100.379323,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "81",
+        "nama":  "TPS BELAKANG SD ANDALAS",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.942754,
+        "longitude":  100.378435,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "82",
+        "nama":  "TPS JLN. JATI 2",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.944173,
+        "longitude":  100.364822,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "83",
+        "nama":  "TPS JLN. SITUJUH",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.935831,
+        "longitude":  100.36517,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "84",
+        "nama":  "TPS LAPANGAN MATADOR",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.957252,
+        "longitude":  100.378494,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "85",
+        "nama":  "TPS CUCIAN GANTING",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.952568,
+        "longitude":  100.37054,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "86",
+        "nama":  "TPS BANK INDONESIA",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.943287,
+        "longitude":  100.362928,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "87",
+        "nama":  "TPS PJKA SIMP. HARU",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.942545,
+        "longitude":  100.372944,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "88",
+        "nama":  "TPS RSUP M. DJAMIL",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.944738,
+        "longitude":  100.368392,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "89",
+        "nama":  "TPS SAWAHAN RUMAH POTONG",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.947041,
+        "longitude":  100.36613,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "90",
+        "nama":  "TPS LAMPU MERAH SAWAHAN",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.946296,
+        "longitude":  100.366717,
+        "jumlah_kontainer":  1,
+        "keterangan":  "TERSEDIA JAM 16:00 - 05:00 WIB",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "91",
+        "nama":  "TPS PLN WILAYAH JLN WAHIDIN",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.946277,
+        "longitude":  100.372919,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "92",
+        "nama":  "TPS YOUTH CENTER",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.952041,
+        "longitude":  100.364618,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "93",
+        "nama":  "TPS RS. TENTARA",
+        "kecamatan":  "PADANG TIMUR",
+        "latitude":  -0.950601,
+        "longitude":  100.371915,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "94",
+        "nama":  "TPS PUSKESMAS SEBERANG PADANG",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.952996,
+        "longitude":  100.371552,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "95",
+        "nama":  "TPS SEBERANG PALINGGAM",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.9629,
+        "longitude":  100.373205,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "96",
+        "nama":  "TPS PERUMAHAN RAWANG JUNDUL/ VILLA MEGA",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.983668,
+        "longitude":  100.378269,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "98",
+        "nama":  "TPS JIRAK CENDANA MATA AIR",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.97736,
+        "longitude":  100.383314,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "99",
+        "nama":  "TPS PEMANCUNGAN",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.95972,
+        "longitude":  100.370887,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "100",
+        "nama":  "TPS DEPAN SD 41 SEBERANG PADANG",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.960066,
+        "longitude":  100.373411,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "101",
+        "nama":  "TPS BAK BATU RAWANG",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.986995,
+        "longitude":  100.383898,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "102",
+        "nama":  "TPS PENDAKIAN PANTAI AIR MANIS",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.967173,
+        "longitude":  100.350532,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "103",
+        "nama":  "TPS JEMBATAN BABUAI SEBERANG PADANG",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.952365,
+        "longitude":  100.374087,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "104",
+        "nama":  "TPS PANTAI AIR MANIS",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.990406,
+        "longitude":  100.360583,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "105",
+        "nama":  "TPS PELINDO TELUK BAYUR",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.997185,
+        "longitude":  100.369151,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "106",
+        "nama":  "TPS PT. SEMEN PADANG TELUK BAYUR",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.994384,
+        "longitude":  100.375426,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "107",
+        "nama":  "TPS PU MUARA",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.965563,
+        "longitude":  100.354019,
+        "jumlah_kontainer":  2,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "108",
+        "nama":  "TPS TELUK BAYUR",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -1.002288,
+        "longitude":  100.366139,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "109",
+        "nama":  "TPS PT. WILMAR",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.999199,
+        "longitude":  100.368154,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "110",
+        "nama":  "TPS GATES",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.999186,
+        "longitude":  100.386609,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "111",
+        "nama":  "TPS RANAH PARAK RUMBIO",
+        "kecamatan":  "PADANG SELATAN",
+        "latitude":  -0.959104,
+        "longitude":  100.364949,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "112",
+        "nama":  "TPS LAPAI BRANDON",
+        "kecamatan":  "NANGGALO",
+        "latitude":  -0.9016033,
+        "longitude":  100.354676,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "113",
+        "nama":  "TPS OLO SITEBA",
+        "kecamatan":  "NANGGALO",
+        "latitude":  -0.896314,
+        "longitude":  100.363004,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "114",
+        "nama":  "TPS SIMP. BEROK SITEBA/ HUTAN KOTA",
+        "kecamatan":  "NANGGALO",
+        "latitude":  -0.896441,
+        "longitude":  100.361123,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "115",
+        "nama":  "TPS SMA 12 PADANG",
+        "kecamatan":  "NANGGALO",
+        "latitude":  -0.909005,
+        "longitude":  100.379496,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "51",
+        "nama":  "TPS UBH GUNUNG PANGILUN",
+        "kecamatan":  "NANGGALO",
+        "latitude":  -0.908561,
+        "longitude":  100.364858,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "117",
+        "nama":  "TPS LUBUK LINTAH",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.929044,
+        "longitude":  100.38782,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "118",
+        "nama":  "TPS UIN LUBUK LINTAH",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.929143,
+        "longitude":  100.384664,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "119",
+        "nama":  "TPS PARAK JIGARANG",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.932432,
+        "longitude":  100.385791,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "120",
+        "nama":  "TPS BELIMBING",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.901255,
+        "longitude":  100.41453,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "123",
+        "nama":  "TPS RSUD RASYIDIN",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.87974,
+        "longitude":  100.395988,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "124",
+        "nama":  "TPS SMK 1 SUMBAR",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.9239,
+        "longitude":  100.390318,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "125",
+        "nama":  "TPS TARUKO DEKAT KANTOR CAMAT KURANJI",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.9171,
+        "longitude":  100.3974,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "126",
+        "nama":  "TPS BASKO CITY MALL",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.915481,
+        "longitude":  100.397958,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "127",
+        "nama":  "TPS KAYU GADANG",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.928282,
+        "longitude":  100.397426,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "128",
+        "nama":  "TPS PERUMAHAN PINANG BARIRIK",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.82422,
+        "longitude":  100.370479,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "129",
+        "nama":  "TPS GUNUNG SARIK",
+        "kecamatan":  "KURANJI",
+        "latitude":  -0.881804,
+        "longitude":  100.411156,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "130",
+        "nama":  "TPS TERANTANG BERINGIN",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.964578,
+        "longitude":  100.435715,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "132",
+        "nama":  "TPS LEMDADIKA PADANG BESI",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.954453,
+        "longitude":  100.455225,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "133",
+        "nama":  "TPS ATAP GENTENG",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.951538,
+        "longitude":  100.481135,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "134",
+        "nama":  "TPS SAKO/ INDARUNG",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.956635,
+        "longitude":  100.486382,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "135",
+        "nama":  "TPS PERUMAHAN INDARUNG",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.9448,
+        "longitude":  100.463251,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "136",
+        "nama":  "TPS TERMINAL KOTO LALANG",
+        "kecamatan":  "LUBUK KILANGAN",
+        "latitude":  -0.951765,
+        "longitude":  100.430895,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "belum_diketahui"
+    },
+    {
+        "kode_titik":  "137",
+        "nama":  "TPS ARAI PINANG",
+        "kecamatan":  "LUBUK BEGALUNG",
+        "latitude":  -0.966889,
+        "longitude":  100.400838,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "138",
+        "nama":  "TPS DIPO PEGAMBIRAN",
+        "kecamatan":  "LUBUK BEGALUNG",
+        "latitude":  -0.979875,
+        "longitude":  100.402392,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "139",
+        "nama":  "TPS UJUNG TANAH",
+        "kecamatan":  "LUBUK BEGALUNG",
+        "latitude":  -0.958616,
+        "longitude":  100.393337,
+        "jumlah_kontainer":  6,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "140",
+        "nama":  "TPS PAMPANGAN",
+        "kecamatan":  "LUBUK BEGALUNG",
+        "latitude":  -0.978013,
+        "longitude":  100.390131,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "142",
+        "nama":  "TPS PASAR GAUNG",
+        "kecamatan":  "LUBUK BEGALUNG",
+        "latitude":  -0.990721,
+        "longitude":  100.382705,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "143",
+        "nama":  "TPS LIMAU MANIS SELATAN/GADUIK",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.942954,
+        "longitude":  100.454303,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "144",
+        "nama":  "TPS KAPALO KOTO",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.925917,
+        "longitude":  100.436746,
+        "jumlah_kontainer":  2,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "145",
+        "nama":  "TPS BINUANG KAMPUANG DALAM/ JL. M. HATTA",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.930114,
+        "longitude":  100.423767,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "146",
+        "nama":  "TPS RUMAH SAKIT UNAND LIMAU MANIS",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.92086,
+        "longitude":  100.457686,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "147",
+        "nama":  "TPS KAMPUS UNAND LM. MANIS",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.91737,
+        "longitude":  100.454587,
+        "jumlah_kontainer":  5,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "148",
+        "nama":  "TPS KAMPUS POLITEKNIK NEGERI PADANG",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.914923,
+        "longitude":  100.466863,
+        "jumlah_kontainer":  2,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "149",
+        "nama":  "TPS SENDIK BRI",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.929559,
+        "longitude":  100.429748,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "150",
+        "nama":  "TPS DEKAT LOKET SIMPATI STAR",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.948239,
+        "longitude":  100.400784,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "151",
+        "nama":  "TPS KOTO LUAR",
+        "kecamatan":  "PAUH",
+        "latitude":  -0.9412554,
+        "longitude":  100.4453041,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "152",
+        "nama":  "TPS TELUK KABUNG TENGAH",
+        "kecamatan":  "BUNGUS TELUK KABUNG",
+        "latitude":  -1.072702,
+        "longitude":  100.415794,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "153",
+        "nama":  "TPS BUNGUS SELATAN",
+        "kecamatan":  "BUNGUS TELUK KABUNG",
+        "latitude":  -1.042058,
+        "longitude":  100.412923,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "155",
+        "nama":  "TPS PLTU TELUK SIRIH",
+        "kecamatan":  "BUNGUS TELUK KABUNG",
+        "latitude":  -1.074907,
+        "longitude":  100.374178,
+        "jumlah_kontainer":  1,
+        "keterangan":  "WAJIB RETRIBUSI",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "156",
+        "nama":  "TPS BUNGUS BARAT",
+        "kecamatan":  "BUNGUS TELUK KABUNG",
+        "latitude":  -1.028755,
+        "longitude":  100.409068,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    },
+    {
+        "kode_titik":  "157",
+        "nama":  "TPS TELUK KABUNG UTARA",
+        "kecamatan":  "BUNGUS TELUK KABUNG",
+        "latitude":  -1.055763,
+        "longitude":  100.414127,
+        "jumlah_kontainer":  1,
+        "keterangan":  "PEMUKIMAN MASYARAKAT",
+        "status":  "aktif"
+    }
+]

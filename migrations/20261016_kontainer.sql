@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS kontainer_settings (
+  id TINYINT PRIMARY KEY,
+  enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  starts_at DATETIME NULL,
+  ends_at DATETIME NULL,
+  updated_by BIGINT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+INSERT IGNORE INTO kontainer_settings (id) VALUES (1);
+
+CREATE TABLE IF NOT EXISTS tps (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  kode_titik VARCHAR(40) NOT NULL UNIQUE,
+  nama VARCHAR(200) NOT NULL,
+  kecamatan VARCHAR(100) NOT NULL,
+  latitude DECIMAL(10,7) NOT NULL,
+  longitude DECIMAL(10,7) NOT NULL,
+  keterangan TEXT NULL,
+  status ENUM('aktif','nonaktif','belum_diketahui') NOT NULL DEFAULT 'belum_diketahui',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS tps_lps (
+  id_tps INT UNSIGNED NOT NULL,
+  id_user BIGINT NOT NULL,
+  PRIMARY KEY (id_tps, id_user),
+  FOREIGN KEY (id_tps) REFERENCES tps(id)
+);
+
+CREATE TABLE IF NOT EXISTS kontainer (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_tps INT UNSIGNED NOT NULL,
+  kode VARCHAR(80) NOT NULL UNIQUE,
+  aktif BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_tps) REFERENCES tps(id)
+);
+
+CREATE TABLE IF NOT EXISTS monitoring_kontainer (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_kontainer INT UNSIGNED NOT NULL,
+  id_pelapor BIGINT NOT NULL,
+  kondisi ENUM('kosong','sebagian','penuh','rusak') NOT NULL,
+  catatan VARCHAR(2000) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX latest_report (id_kontainer, id),
+  FOREIGN KEY (id_kontainer) REFERENCES kontainer(id)
+);

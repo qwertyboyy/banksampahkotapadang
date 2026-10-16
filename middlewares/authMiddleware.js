@@ -35,8 +35,8 @@ const sessionMiddleware = (refresh = false) => async (req, res, next) => {
         .json({ message: "Sesi berakhir. Silakan login kembali" });
     }
     if (
-      !["superadmin", "admin_bank", "nasabah"].includes(user.role) ||
-      (user.role !== "superadmin" && !user.id_bank_sampah)
+      !["superadmin", "admin_bank", "nasabah", "lps", "petugas_truk"].includes(user.role) ||
+      (["admin_bank", "nasabah"].includes(user.role) && !user.id_bank_sampah)
     )
       return res.status(403).json({ message: "Akses ditolak" });
     if (user.role === "nasabah") {
