@@ -1,7 +1,9 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import sharp from "sharp";
+import { randomUUID } from 'node:crypto';
+import { writeFile } from 'node:fs/promises';
+import { processUploadImage } from '../services/uploadImage.js';
 
 const createUploader = (folder) => {
   const uploadPath = `uploads/${folder}`;
@@ -43,40 +45,22 @@ const createUploader = (folder) => {
         return next();
       }
 
-      const filename =
-        Date.now() + "-" + Math.round(Math.random() * 1e9) + ".png";
+      const filename = `${randomUUID()}.png`;
 
       const filepath = path.join(uploadPath, filename);
 
-      await sharp(req.file.buffer, { limitInputPixels: 16000000 })
-        .rotate()
-        .resize({
-          width: 500,
-          height: 500,
-          fit: "contain",
-          position: "centre",
-          background: {
-            r: 0,
-            g: 0,
-            b: 0,
-            alpha: 0,
-          },
-          withoutEnlargement: true,
-        })
-        .png({
-          compressionLevel: 9,
-        })
-        .toFile(filepath);
+      const output = await processUploadImage(req.file.buffer);
+      await writeFile(filepath, output, { flag: 'wx' });
 
       req.file.filename = filename;
 
       next();
     } catch (err) {
-      console.error(err);
+      if (!err.status) console.error('upload_image_failed', err.code || err.name);
 
-      return res.status(500).json({
+      return res.status(err.status || 500).json({
         success: false,
-        message: "Gagal compress image",
+        message: err.status ? err.message : "Gagal menyimpan gambar",
       });
     }
   };
